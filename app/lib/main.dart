@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:app/config.dart';
 import 'package:app/news.dart';
+import 'package:app/system/SystemInstance.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,23 +53,32 @@ class _Login extends State<Login> {
   void logIn() {
     print("hello");
     Map params = Map();
-    params['userName'] = userName.text;
-    params['passWord'] = passWord.text;
+    params['username'] = userName.text;
+    params['password'] = passWord.text;
     print('${Config.API_URL}/user_profile/login');
-    http.post('${Config.API_URL}/user_profile/login', body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-      int data = resMap['data'];
-      _id = resMap['getId'];
-      _data.user_id = _id;
-      Data2(_id);
-      print("${_data.userId}dhee");
-      // print(_id);
+    http.post('${Config.API_URL}/authorize', body: params).then((res) {
+      int resLength = res.body.length;
+      String token = null;
+      if (resLength > 0) {
+        Map resMap = jsonDecode(res.body) as Map;
+        int userId = resMap["userId"];
+        token = resMap["token"];
+        SystemInstance systemInstance = SystemInstance();
+        systemInstance.userId = userId;
+        systemInstance.token = token;
+      }
+      // int data = 0;
+      // print(resMap);
+      // int data = resMap['data'];
+      // _id = resMap['getId'];
+      // _data.user_id = _id;
+      // Data2(_id);
+      // print("${_data.userId}dhee");
+      // // print(_id);
 
       _fileUtil.writeFile(_id);
 
-      print(data);
-      if (data == 1) {
+      if (token != null) {
         _hasUser = true;
         print("yes");
         Navigator.push(
@@ -370,6 +380,13 @@ class First extends StatefulWidget {
 }
 
 class _First extends State {
+  SystemInstance _systemInstance = SystemInstance();
+
+  @override
+  void initState() {
+    print("user id ${_systemInstance.userId}");
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
