@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'news.dart';
+import 'alltournament.dart';
 import 'running.dart';
-import 'profile.dart';
+import 'tournament.dart';
 import 'report.dart';
 import 'setting.dart';
 import 'Maps.dart';
@@ -19,10 +19,10 @@ class Launcher extends StatefulWidget {
 class _LauncherState extends State<Launcher> {
   int _selectedIndex = 0;
   List<Widget> _pageWidget = <Widget>[
-    News(),
+    AllTournament(),
+    Tournament(),
     Running(),
     //MapSample(),
-    Profile(),
     Report(),
     Setting(),
   ];

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:app/config.dart';
-import 'package:app/news.dart';
+import 'package:app/alltournament.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,6 @@ import 'database.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  var _id;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class Login extends StatefulWidget {
 class _Login extends State<Login> {
   TextEditingController userName = TextEditingController();
   TextEditingController passWord = TextEditingController();
-  Data _data = new Data();
+  //Data _data = new Data();
   int _id;
   bool _hasUser = true;
 
@@ -60,9 +59,9 @@ class _Login extends State<Login> {
       print(resMap);
       int data = resMap['data'];
       _id = resMap['getId'];
-      _data.user_id = _id;
-      Data2(_id);
-      print("${_data.userId}dhee");
+      //_data.user_id = _id;
+      //Data2(_id);
+      //print("${_data.userId}dhee");
       // print(_id);
 
       _fileUtil.writeFile(_id);
@@ -386,30 +385,5 @@ class _First extends State {
         Launcher.routeName: (context) => Launcher(),
       },
     );
-  }
-}
-
-class Data {
-  String geekName;
-  int userId;
-
-  Data() {
-    this.userId = 10;
-  }
-
-  String get geek_name {
-    return geekName;
-  }
-
-  set geek_name(String name) {
-    this.geekName = name;
-  }
-
-  int get user_id {
-    return userId;
-  }
-
-  set user_id(int id) {
-    this.userId = id;
   }
 }
