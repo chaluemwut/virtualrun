@@ -10,7 +10,7 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
-    private int UserId;
+    private int userId;
     @Column(name = "user_name")
     private String userName;
     @Column(name = "pass_word")
