@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:app/config.dart';
+import 'file:///E:/virtualrun/app/lib/config/config.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -24,6 +24,7 @@ class _RunningState extends State<Running> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('วิ่ง'),
       ),
 

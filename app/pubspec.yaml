@@ -37,6 +37,10 @@ dependencies:
   flutter_session:
   path_provider: ^1.6.18
   dropdown_formfield: 0.1.3
+  percent_indicator: 2.1.7+4
+  cached_network_image: ^2.0.0
+  image_picker: ^0.6.7+12
+  dio:
 
 
 
@@ -63,6 +67,17 @@ flutter:
      - assets/images/run2.jpg
      - assets/images/run3.jpg
      - assets/images/run4.jpg
+     - assets/images/nonprofile.png
+     - assets/images/mile.png
+     - assets/images/time.jpg
+     - assets/images/reward.jpg
+     - assets/images/bolt.png
+     - assets/images/down_orange.png
+     - assets/images/fish.png
+     - assets/images/sausage.png
+     - assets/images/up_red.png
+     - assets/images/shoe.png
+     - assets/images/kiw.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

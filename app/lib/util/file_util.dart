@@ -23,7 +23,7 @@ class FileUtil {
       return int.parse(contents);
     } catch (e) {
       // If encountering an error, return 0
-      return 0;
+      return 100;
     }
   }
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:app/config.dart';
+import 'file:///E:/virtualrun/app/lib/config/config.dart';
 import 'package:http/http.dart' as http;
 class Data{
   String geekName;

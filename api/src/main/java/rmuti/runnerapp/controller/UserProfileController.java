@@ -37,7 +37,7 @@ public class UserProfileController {
         } else {
             res.setStatus(0);
             res.setMessage("have Usered");
-            //  res.dataReturn(1);
+            //res.dataReturn(1);
             res.setData(0);
         }
 

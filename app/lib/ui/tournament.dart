@@ -1,16 +1,18 @@
-import 'package:app/main.dart';
+import 'package:app/data/full.dart';
+import 'package:app/data/half.dart';
+import 'package:app/data/mini.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
-import 'slide.dart';
 import 'package:http/http.dart' as http;
-import 'config.dart';
-import 'dart:convert';
-import 'main.dart';
-import 'funrun.dart';
-//import 'database.dart';
+import '../data/funrun.dart';
+import 'package:app/data/add.dart';
 
 class Tournament extends StatefulWidget {
   static const routeName = '/news';
+  final int userId;
+
+  const Tournament({Key key, this.userId}) : super(key: key);
+
 
   @override
   State<StatefulWidget> createState() {
@@ -20,22 +22,15 @@ class Tournament extends StatefulWidget {
 
 class _Tournament extends State<Tournament> {
   FileUtil _fileUtil = FileUtil();
-
-  int _id;
+  var userId;
   int gg;
 
   @override
   void initState(){
     _fileUtil.readFile().then((id){
-      this._id = id;
-      print('x2${_id}');
+      this.userId = id;
+      print('id tournament ${userId}');
     });
-    print('x1 ${_id}');
-  }
-
-  void onSave(){
-    gg = _id;
-    print('button ${_id}');
   }
 
   List<Widget> _uiList = List();
@@ -58,13 +53,12 @@ class _Tournament extends State<Tournament> {
     //_data.userId = 5;
     // print(_data.userId);
     //print(_id);
-
-
-
-
+    gg = userId;
     return Scaffold(
       appBar: AppBar(
-        title: Text('ข่าว'),
+        centerTitle: true,
+        title: Text('รายการวิ่ง'),
+
       ),
       body: ListView(
         children: <Widget>[
@@ -94,7 +88,7 @@ class _Tournament extends State<Tournament> {
                       ),
                     ),
                     ListTile(
-                      title: Text('Fun Run $gg'),
+                      title: Text('Fun Run'),
                       subtitle: Text('วิ่งระยะ 5 กิโลเมตร ภายในเวลา 1 วัน'),
                     ),
                   ],
@@ -108,8 +102,8 @@ class _Tournament extends State<Tournament> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
               child: InkWell(
                 onTap: () => {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => RegisterMini())),
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Mini())),
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,8 +136,8 @@ class _Tournament extends State<Tournament> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
               child: InkWell(
                 onTap: () => {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => RegisterHalf())),
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Half())),
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -176,8 +170,8 @@ class _Tournament extends State<Tournament> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
               child: InkWell(
                 onTap: () => {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => RegisterFull())),
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FullMarathon())),
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -204,19 +198,16 @@ class _Tournament extends State<Tournament> {
               ),
             ),
           ),
-          Container(
-            height: 50,
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: RaisedButton(
-              textColor: Colors.white,
-              color: Colors.blue,
-              child: Text('${_id}'),
-              onPressed: () {
-                onSave();
-              },
-            ),
-          ),
+
+
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,MaterialPageRoute(builder: (context) => AddTournament()));
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.red,
       ),
     );
   }
@@ -264,7 +255,7 @@ class _Description extends State{
 }
 */
 
-class AddNews extends StatefulWidget{
+/*class AddNews extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -346,4 +337,4 @@ class Data2{
     this.userId2 = id2;
   }
 }
-
+*/

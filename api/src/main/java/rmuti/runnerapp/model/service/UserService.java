@@ -30,6 +30,7 @@ public class UserService {
             String userPassWord = userProfile.getPassWord();
             if (encoderUtil.passwordEncoder().matches(loginBean.getPassword(), userPassWord)) {
                 Map<String, Object> ret = new HashMap<>();
+                ret.put("data", 1);
                 ret.put("token", tokenService.createToken(userProfile));
                 ret.put("userId", userProfile.getUserId());
                 return Optional.of(ret);

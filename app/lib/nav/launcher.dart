@@ -1,11 +1,11 @@
+import 'package:app/ui/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'alltournament.dart';
-import 'running.dart';
-import 'tournament.dart';
-import 'report.dart';
-import 'setting.dart';
-import 'Maps.dart';
+import '../ui/profile.dart';
+import '../ui/running.dart';
+import '../ui/tournament.dart';
+import '../ui/report.dart';
+import '../Maps.dart';
 
 class Launcher extends StatefulWidget {
   static const routeName = '/';
@@ -19,9 +19,9 @@ class Launcher extends StatefulWidget {
 class _LauncherState extends State<Launcher> {
   int _selectedIndex = 0;
   List<Widget> _pageWidget = <Widget>[
-    AllTournament(),
     Tournament(),
     Running(),
+    Profile(),
     //MapSample(),
     Report(),
     Setting(),
@@ -30,7 +30,7 @@ class _LauncherState extends State<Launcher> {
   = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.newspaper),
-      title: Text('ข่าว'),
+      title: Text('รายการวิ่ง'),
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.running),
@@ -38,7 +38,7 @@ class _LauncherState extends State<Launcher> {
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.userAlt),
-      title: Text('Profile'),
+      title: Text('บัญชีของฉัน'),
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.flagCheckered),
@@ -66,7 +66,7 @@ class _LauncherState extends State<Launcher> {
         selectedItemColor: Theme
             .of(context)
             .primaryColor,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.grey[900],
         onTap: _onItemTapped,
       ),
     );

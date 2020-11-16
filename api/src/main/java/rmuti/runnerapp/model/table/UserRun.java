@@ -10,11 +10,14 @@ public class UserRun {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "r_id")
-    private int Rid;
+    private int rid;
+
     @Column(name = "user_id")
-    private int UserId;
+    private int userId;
+
     @Column(name = "a_id")
-    private int Aid;
+    private int aid;
+
     @Column(name = "distancing")
-    private String Distancing;
+    private String distancing;
 }

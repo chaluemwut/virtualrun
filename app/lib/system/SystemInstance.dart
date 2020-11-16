@@ -9,6 +9,8 @@ class SystemInstance {
 
   String _token;
   int _userId;
+  int _aid;
+  String _userName;
 
   String get token => _token;
 
@@ -20,5 +22,14 @@ class SystemInstance {
 
   set userId(int value) {
     _userId = value;
+  }
+  int get aid => _aid;
+
+  set aid(int value){
+    _aid = value;
+  }
+  String get userName => _userName;
+  set userName(String value){
+    _userName = value;
   }
 }
