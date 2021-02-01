@@ -17,27 +17,65 @@ class MyMapPageState extends State<MapSample> {
   Completer<GoogleMapController> _controller = Completer();
   LocationData currentLocation;
 
+  var point = <LatLng>[
+    LatLng(16.4464643,102.8492125),
+    LatLng(16.4467942,102.8494465),
+    LatLng(16.4472939,102.8496678),
+    LatLng(16.4475511,102.8497208),
+    LatLng(16.4479724,102.8497248),
+    LatLng(16.4484631,102.8496376),
+    LatLng(16.4489853,102.8494184),
+    LatLng(16.4493364,102.8494921),
+    LatLng(16.4511137,102.848984),
+    LatLng(16.4516719,102.8491409),
+    LatLng(16.4518861,102.8496344),
+    LatLng(16.4519758,102.8535971),
+    LatLng(16.4514739,102.8547799),
+    LatLng(16.4509434,102.8551825),
+    LatLng(16.4501508,102.8550715),
+    LatLng(16.4497263,102.8544097),
+    LatLng(16.4452104,102.8520371),
+    LatLng(16.4464643,102.8492125),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Map'),),
-      body: GoogleMap(
-        myLocationEnabled: true,
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(16.4329112, 102.823361),
-          zoom: 12,
-        ),
+      body: Center(
+        child: Container(
+          child: GoogleMap(
+            myLocationEnabled: true,
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(16.43347, 102.858376),
+              zoom: 12,
+            ),
 
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+            polylines: {
+              Polyline(
+                  polylineId: PolylineId("p1"),
+                  color: Colors.blue,
+                  points: point
+              )
+            },
+          ),
+        ),
       ),
+
+
+
       floatingActionButton: FloatingActionButton.extended(
           onPressed: _goTome,
           label: Text('My location'),
           icon: Icon(Icons.gps_fixed)
+
       ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
+
 
     );
   }

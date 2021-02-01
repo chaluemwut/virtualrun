@@ -44,6 +44,19 @@ class _RegisterRun extends State<RegisterRun> {
     // });
   }
 
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('บันทึกสำเร็จ'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
+
   void onRegisterRun() {
     Map params = Map();
     // params['userNameFun'] = userNameFun.text;
@@ -58,6 +71,20 @@ class _RegisterRun extends State<RegisterRun> {
     http.post('${Config.API_URL}/user_run/save_run',headers: header, body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
       print(resMap);
+      showCustomDialog(context);
+    });
+    setState(() {});
+  }
+
+  void onClick(){
+    Map params = Map();
+    params['id'] = aID.toString();
+    params['userId'] = userId.toString();
+    print(params);
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    http.post('${Config.API_URL}/test_run/save_run',headers: header, body: params).then((res) {
+      Map resMap = jsonDecode(res.body) as Map;
+      print(resMap);
       Widget okButton = FlatButton(
         child: Text("ปิด"),
         onPressed: () => Navigator.of(context).pop(),
@@ -69,14 +96,15 @@ class _RegisterRun extends State<RegisterRun> {
         ],
       );
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-        return alert;
-      },
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
       );
     });
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context)  {
     aID = widget.aaid;
@@ -127,7 +155,8 @@ class _RegisterRun extends State<RegisterRun> {
                       onPressed: () {
                         print(userNameFun.text);
                         print(passWordFun.text);
-                        onRegisterRun();
+                        // onRegisterRun();
+                        onClick();
                       },
                     )),
               ],

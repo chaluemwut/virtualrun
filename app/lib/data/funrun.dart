@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:app/system/SystemInstance.dart';
+import 'package:app/tester/testall.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,21 +23,22 @@ class _FunRun extends State {
   SystemInstance _systemInstance = SystemInstance();
   var aid;
   var userId;
-  List<Run> runs = [];
+  List<Runner> runs = List();
 
   Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    var data = await http.post('${Config.API_URL}/all_run/test?type=Fun Run',headers: header );
+    var data = await http.post('${Config.API_URL}/test_all/show?type=Fun Run',headers: header );
     var _data = jsonDecode(data.body);
     print(_data);
     for(var i in _data){
-     Run run = Run(
-       i["aid"],
-       i["distance"],
-       i["time"],
-       i["type"]
-     );
-     runs.add(run);
+      Runner run = Runner(
+        i["id"],
+        i["distance"],
+        i["type"],
+        i["dateStart"],
+        i["dateEnd"],
+      );
+      runs.add(run);
     }
     print(runs);
     return runs;
@@ -49,62 +51,6 @@ class _FunRun extends State {
       this.userId = id;
       print('id funrun ${userId}');
     });
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/all_run/test?type=Fun Run',headers: header ).then((res) {
-   // http.post('${Config.API_URL}/all_run/show_fun',headers: header ).then((res) {
-      var data = http.post('${Config.API_URL}/all_run/test?type=Fun Run',headers: header );
-      print('sfkfdkj ${data}');
-      // Map resMap = jsonDecode(res.body) as Map;
-      // print(resMap);
-      //List resData = resMap["data"];
-      // for (int i = 0; i < resData.length; i++) {
-      //   _systemInstance.aid = aid;
-      //   if (i == 0) {
-      //       Map data = resData[i];
-      //       Card card = Card(
-      //         child: InkWell(
-      //           splashColor: Colors.blue.withAlpha(30),
-      //           onTap: () {
-      //             if (i == 0) {
-      //               Navigator.push(context, MaterialPageRoute(
-      //                 builder: (context) => RegisterFunRun(aid: aid,),
-      //               ),
-      //               );
-      //             } else if (i == 1) {
-      //               int bb = resData[1]["aid"];
-      //               Navigator.push(context,
-      //                 MaterialPageRoute(
-      //                   builder: (context) => RegisterFunRun(),),);
-      //             } else if (i == 2) {
-      //               Navigator.push(context,
-      //                 MaterialPageRoute(builder: (context) =>
-      //                     RegisterFunRun(),),);
-      //             }
-      //           },
-      //           child: Container(
-      //             width: 300,
-      //             height: 100,
-      //             child: Column(
-      //               mainAxisAlignment: MainAxisAlignment.center,
-      //               crossAxisAlignment: CrossAxisAlignment.center,
-      //               children: <Widget>[
-      //                 Text('${data["distance"] + ' ' + 'กิโลเมตร'}'
-      //                     '${'ภายใน' + ' ' + data['time'] + ' ' + 'วัน'}',),
-      //               ],
-      //             ),
-      //             // child: Text('${data["distance"]+' '+'กิโลเมตร'}'
-      //             //             '${'ภายใน'+' '+data['time']+' '+'วัน'}',
-      //             //   textAlign: TextAlign.center,),
-      //           ),
-      //         ),
-      //       );
-      //
-      //       _uilist.add(card);
-      //       setState(() {});
-      //     }
-      //   }
-      }
-    );
     super.initState();
   }
 
@@ -119,29 +65,56 @@ class _FunRun extends State {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Fun Run'),),
+        title: Text('Fun Run'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
+      ),
       body: Container(
         child: FutureBuilder(
           future: _getData(),
-          builder: (BuildContext context,AsyncSnapshot snapshot){
-            return ListView.builder (
-              // itemBuilder: getItem ,
-              itemCount: snapshot.data.length ,
-              itemBuilder: (BuildContext context,int index){
-                return Card(
-                    child: ListTile(
-                      title: Text('ระยะทาง '+snapshot.data[index].distance+' กิโลเมตร'+' ภายใน '+snapshot.data[index].time+' วัน'),
-                      onTap: (){
-                        int aId = snapshot.data[index].aid;
-                        print(aId);
-                        Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) => RegisterRun(aaid: aId,)));
-                      },
-                    ),
-                );
-              }
+          builder: (BuildContext context,AsyncSnapshot snapshot) {
+            if (snapshot.data == null) {
+              return Padding(padding: EdgeInsets.all(0),);
+            } else {
+              return ListView.builder(
+                // itemBuilder: getItem ,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      child: InkWell(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: Icon(Icons.add_circle),
+                              title: Text('ระยะทาง ' + snapshot.data[index].distance +' กิโลเมตร'),
+                              subtitle: Text(' จากวันที่ ' + snapshot.data[index].dateStart + ' ถึงวันที่ '
+                                  + snapshot.data[index].dateEnd),
+                              onTap: () {
+                                int aId = snapshot.data[index].id;
+                                print(aId);
+                                Navigator.push(context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            RegisterRun(aaid: aId,)));
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
 
-            );
+                    );
+                  }
+
+              );
+            }
           }
         ),
       ),

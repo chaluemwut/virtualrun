@@ -1,91 +1,172 @@
-import 'package:app/database.dart';
-import 'package:flutter/material.dart';
-import '../database.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:app/system/SystemInstance.dart';
-import 'package:app/util/file_util.dart';
-import 'package:app/config/config.dart';
+import 'dart:io';
 
+import 'package:dropdownfield/dropdownfield.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Report extends StatefulWidget {
-  static const routeName = '/report';
-
-
   @override
-  State<StatefulWidget> createState() {
-    return _ReportState();
-  }
+  _ReportState createState() => _ReportState();
 }
 
 class _ReportState extends State<Report> {
-  List _uilist = List();
-  FileUtil _fileUtil = FileUtil();
-  SystemInstance _systemInstance = SystemInstance();
-  var aid;
-  var userId;
-  @override
-  void initState() {
-    // _fileUtil.readFile().then((id){
-    //   this.userId = id;
-    //   print('id funrun ${userId}');
-    // });
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/all_run/test=?Fun Run',headers: header ).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      Map resData = resMap['data'];
-         for (int j = 0; j < resData.length; j++) {
-            Map data = resData[j];
-            Card card = Card(
-              child: InkWell(
-                splashColor: Colors.blue.withAlpha(30),
-                onTap: () {
+  String dropdown = 'Fun Run';
+  File _images;
+  var pickedFile;
+  final picker = ImagePicker();
+  TextEditingController km = TextEditingController();
+  TextEditingController time = TextEditingController();
 
-                },
-                child: Container(
-                  width: 300,
-                  height: 100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${data["distance"] + ' ' + 'กิโลเมตร'}'
-                          '${'ภายใน' + ' ' + data['time'] + ' ' + 'วัน'}',),
-                    ],
-                  ),
-                  // child: Text('${data["distance"]+' '+'กิโลเมตร'}'
-                  //             '${'ภายใน'+' '+data['time']+' '+'วัน'}',
-                  //   textAlign: TextAlign.center,),
-                ),
-              ),
-            );
-
-            _uilist.add(card);
-            setState(() {});
-          }
-        }
-    );
-    super.initState();
+  void sentReport(){
+    Map params = Map();
+    params["distance"] = km.text;
+    params["time"] = time.text;
+    params["type"] = dropdown;
   }
-
-
-  Widget getItem(BuildContext context, int i) {
-    return _uilist[i];
-  }
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
+    Future getImages()async{
+      pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 300.0,maxWidth: 300.0);
+      print('dgjdlkjlg');
+      setState(() {
+        if(pickedFile != null){
+          _images = File(pickedFile.path);
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('รายการวิ่ง'),),
-      body: ListView.builder (
-        itemBuilder: getItem ,
-        itemCount: _uilist.length ,
-      ) ,
+        title: Text('ส่งผลการวิ่ง'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
 
+        child: Container(
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Container(
+              //   padding: const EdgeInsets.all(10),
+              //   child: DropdownButtonFormField<String>(
+              //     hint: Text('เลือกรายการที่ลงสมัคร'),
+              //     value: dropdown,
+              //     iconSize: 20,
+              //     elevation: 16,
+              //     style: TextStyle(color: Colors.deepPurple),
+              //
+              //     onChanged: (String newValue){
+              //       setState(() {
+              //         dropdown = newValue;
+              //       });
+              //     },
+              //     items: <String>['Fun Run', 'Mini', 'Half', 'Full']
+              //         .map<DropdownMenuItem<String>>((String value) {
+              //       return DropdownMenuItem<String>(
+              //         value: value,
+              //         child: Text(value),
+              //       );
+              //     }).toList(),
+              //   ),
+              // ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                child: DropDownField(
+                  controller: typeRunSelect,
+                  hintText: "เลือกรายการที่ลงสมัคร",
+                  enabled: true,
+                  itemsVisibleInDropdown: 5,
+                  items: typeRun,
+                  textStyle: TextStyle(color: Colors.black),
+                  onValueChanged: (value){
+                    setState(() {
+                      select = value;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 30),
+                child: Center(
+                  child: _images == null ? Container(
+                    child: Center(
+                      child: Text('หลักฐานการวิ่ง'),
+                    ),
+                    color: Colors.grey[200],
+                    width: 250.0,
+                    height: 250.0,
+                  ):Image.file(_images),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(120, 20, 120, 20),
+                child: Container(
+
+                  child: RaisedButton.icon(
+                    label: Text('เพิ่มรูปภาพ'),
+                    icon: Icon(Icons.add_a_photo),
+                    onPressed: getImages,
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: km,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'ระยะทาง',
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: TextField(
+                  controller: time,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'เวลา',
+                  ),
+                ),
+              ),
+              Container(
+                height: 60,
+                width: 410,
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: RaisedButton(
+                  textColor: Colors.white,
+                  color: Colors.blue,
+                  child: Text('เพิ่ม'),
+                  onPressed: () {
+
+                  },
+                )
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+String select = '';
+final typeRunSelect = TextEditingController();
+
+List<String> typeRun = [
+  "Fun Run",
+  "Mini",
+  "Half",
+  "Full",
+];

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:app/config/config.dart';
 import 'package:app/system/SystemInstance.dart';
@@ -8,6 +9,7 @@ import 'package:http/http.dart'as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 
 class AddTournament extends StatefulWidget {
@@ -20,62 +22,94 @@ class AddTournament extends StatefulWidget {
 }
 
 class _AddTournament extends State<AddTournament> {
+  final format = DateFormat.yMd();
+  DateTime _date = new DateTime.now();
+  DateTime _dateTime = new DateTime.now();
+  var myDate = 'ยังไม่ได้เลือก';
+  var myEndDate = 'ยังไม่ได้เลือก';
+
   TextEditingController km = TextEditingController();
   TextEditingController time = TextEditingController();
   String dropdown = 'Fun Run';
   SystemInstance _systemInstance = SystemInstance();
-  FileUtil _fileUtil = FileUtil();
-  File _images;
-  var pickedFile;
-  final picker = ImagePicker();
+
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('บันทึกสำเร็จ'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
 
   void add() {
     Map params = Map();
     params["distance"] = km.text;
-    params["time"] = time.text;
     params["type"] = dropdown;
+    params["dateStart"] = myDate;
+    params["dateEnd"] = myEndDate;
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/all_run/save_all',headers: header, body: params).then((res) {
+    http.post('${Config.API_URL}/test_all/save',headers: header, body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
       // SystemInstance systemInstance = SystemInstance();
       // systemInstance.aid = resMap["aid"];
       // _fileUtil.writeFile(systemInstance.aid);
-      Widget okButton = FlatButton(
-        child: Text("ปิด"),
-        onPressed: () => Navigator.of(context).pop(),
-      );
-      AlertDialog alert = AlertDialog(
-        content: Text("บันทึกสำเร็จ."),
-        actions: [
-          okButton,
-        ],
-      );
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-        return alert;
-      },
-      );
+      showCustomDialog(context);
       setState(() {});
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    Future getImages()async{
-      pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 300.0,maxWidth: 300.0);
-      print('dgjdlkjlg');
+  Future<Null> _selectDate(BuildContext context) async{
+    final DateTime picker = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if( picker!= null){
+      print('Date:${_date.toString()}');
       setState(() {
-        if(pickedFile != null){
-          _images = File(pickedFile.path);
-        }
+        _date = picker;
+        myDate = ("${_date.day}/${_date.month}/${_date.year}");
       });
     }
+  }
+  Future<Null> _selectEndDate(BuildContext context)async{
+    final DateTime picked  = await showDatePicker(
+      context: context,
+      initialDate: _dateTime,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if(picked!=null){
+      setState(() {
+        _dateTime = picked;
+        myEndDate = ("${_dateTime.day}/${_dateTime.month}/${_dateTime.year}");
+      });
+    }
+  }
 
-    // TODO: implement build
+  @override
+  Widget build(BuildContext context) {
+    print(myDate);
     return Scaffold(
-        appBar: AppBar(title: Text('เพิ่มรายการวิ่ง'),),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('เพิ่มรายการวิ่ง'),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.purple, Colors.red],
+                begin: Alignment.bottomRight,
+                end: Alignment.topLeft,
+              ),
+            ),
+          ),
+        ),
         body: Padding(
             padding: EdgeInsets.all(10),
             child: ListView(
@@ -90,62 +124,66 @@ class _AddTournament extends State<AddTournament> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                    controller: time,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'เวลา',
+                // Container(
+                //   padding: EdgeInsets.all(10),
+                //   child: TextField(
+                //     controller: time,
+                //     decoration: InputDecoration(
+                //       border: OutlineInputBorder(),
+                //       labelText: 'เวลา',
+                //     ),
+                //   ),
+                // ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text('เลือกวันที่เริ่มต้น',textAlign: TextAlign.center,style: TextStyle(fontSize: 15,color: Colors.black),),
+                          IconButton(
+                            icon: Icon(Icons.date_range),
+                            iconSize: 50,
+                            color: Colors.green,
+                            onPressed: () => _selectDate(context),
+                          ),
+                          Text("${myDate}"),
+                        ],
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text('เลือกวันสิ้นสุด',textAlign: TextAlign.center,style: TextStyle(fontSize: 15,color: Colors.black),),
+                          IconButton(
+                            icon: Icon(Icons.date_range),
+                            iconSize: 50,
+                            color: Colors.red,
+                            onPressed: () => _selectEndDate(context),
+                          ),
+                          Text("${myEndDate}"),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: DropdownButtonFormField<String>(
-                    value: dropdown,
-                    iconSize: 20,
-                    elevation: 16,
-                    style: TextStyle(color: Colors.deepPurple),
-
-                    onChanged: (String newValue){
+                // SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  child: DropDownField(
+                    controller: typeRunSelect,
+                    hintText: "เลือกรายการที่เปิดรับสมัคร",
+                    enabled: true,
+                    itemsVisibleInDropdown: 5,
+                    items: typeRun,
+                    textStyle: TextStyle(color: Colors.black),
+                    onValueChanged: (value){
                       setState(() {
-                        dropdown = newValue;
+                        dropdown = value;
                       });
                     },
-                    items: <String>['Fun Run', 'Mini', 'Half', 'Full']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: Center(
-                    child: _images == null ? Container(
-                      child: Center(
-                        child: Text('ยังไม่มีรูปภาพ'),
-                      ),
-                      color: Colors.grey[200],
-                      width: 250.0,
-                      height: 250.0,
-                    ):Image.file(_images),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(120, 20, 120, 20),
-                  child: Container(
-
-                    child: RaisedButton.icon(
-                      label: Text('เพิ่มรูปภาพ'),
-                      icon: Icon(Icons.add_a_photo),
-                      onPressed: getImages,
-                    ),
-                  ),
-                ),
+                SizedBox(height: 24),
                 Container(
                     height: 50,
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -164,5 +202,13 @@ class _AddTournament extends State<AddTournament> {
         )
     );
   }
-
 }
+String select = '';
+final typeRunSelect = TextEditingController();
+
+List<String> typeRun = [
+  "Fun Run",
+  "Mini",
+  "Half",
+  "Full",
+];

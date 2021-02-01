@@ -1,3 +1,4 @@
+
 import 'package:app/ui/profile.dart';
 import 'package:app/ui/tournament.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +28,37 @@ class _Login extends State<Login> {
   TextEditingController passWord = TextEditingController();
   bool _hasUser = true;
   var userId;
+  var userNameWrtie;
+  var passWordWrite;
+  var textRead;
 
   FileUtil _fileUtil = FileUtil();
+  SystemInstance _systemInstance = SystemInstance();
+
+  // Future<File> saveToFile() async{
+  //   setState(() {
+  //     textRead = userId.toString();
+  //   });
+  //   return widget.
+  // }
+  @override
+  void initState(){
+
+    super.initState();
+    _fileUtil.readFile().then((value){
+      setState(() {
+        textRead = value;
+        print("UserID: ${textRead}");
+      });
+    });
+    loadData();
+  }
+  void loadData(){
+     http.post('${Config.API_URL}/user_profile/load').then((res){
+       Map resMap = jsonDecode(res.body) as Map;
+       print(resMap);
+     });
+  }
 
   void logIn() {
     print("hello");
@@ -46,8 +76,9 @@ class _Login extends State<Login> {
         systemInstance.userId = resMap["userId"];
         systemInstance.token = resMap["token"];
         systemInstance.userName = userName.text;
+        systemInstance.passWord = passWord.text;
         userId = systemInstance.userId;
-       // _fileUtil.writeFile(systemInstance.userId);
+        _fileUtil.writeFile(systemInstance.userId);
       }else{
         print('no');
       }
@@ -116,7 +147,8 @@ class _Login extends State<Login> {
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          title: Text('RMUTI มินิมาราธอน'),
+          centerTitle: true,
+          title: Text('VIRTUAL RUN'),
         ),
         body: Padding(
             padding: EdgeInsets.all(10),

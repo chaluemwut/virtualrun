@@ -30,6 +30,15 @@ class _SettingState extends State<Setting> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("ตั้งค่า",),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
       ),
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle(

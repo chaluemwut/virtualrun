@@ -1,3 +1,4 @@
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/config/config.dart';
@@ -21,6 +22,8 @@ class Register extends StatefulWidget {
 class _Register extends State<Register> {
   TextEditingController _userName = TextEditingController();
   TextEditingController _passWord = TextEditingController();
+  // TextEditingController _name = TextEditingController();
+  String dropdown = 'User';
 
   // TextEditingController _conFirmPassWord = TextEditingController();
   // int id;
@@ -46,6 +49,8 @@ class _Register extends State<Register> {
     Map params = Map();
     params['userName'] = _userName.text;
     params['passWord'] = _passWord.text;
+    // params['name'] = _name.text;
+    params['au'] = dropdown;
     //params['confirmPassWord'] = _conFirmPassWord.text;
 
     http.post('${Config.API_URL}/user_profile/save', body: params).then((res) {
@@ -71,6 +76,8 @@ class _Register extends State<Register> {
           },
         );
       } else {
+        // SystemInstance systemInstance = SystemInstance();
+        // systemInstance.name = _name.text;
         Widget okButton = FlatButton(
           child: Text("ปิด"),
           onPressed: () => Navigator.push(
@@ -99,6 +106,7 @@ class _Register extends State<Register> {
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Text('สมัครสมาชิก'),
         ),
         body: Padding(
@@ -133,18 +141,33 @@ class _Register extends State<Register> {
                     ),
                   ),
                 ),
-                /*
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: TextField(
-                    obscureText: true,
-                    controller: _conFirmPassWord,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'ยืนยันรหัสผ่าน',
-                    ),
+
+                // Container(
+                //   padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                //   child: TextField(
+                //     controller: _name,
+                //     decoration: InputDecoration(
+                //       border: OutlineInputBorder(),
+                //       labelText: 'ชื่อโปรไฟล์',
+                //     ),
+                //   ),
+                // ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                  child: DropDownField(
+                    controller: typeAUSelect,
+                    hintText: "เลือกรายการที่ลงสมัคร",
+                    enabled: true,
+                    itemsVisibleInDropdown: 5,
+                    items: typeAU,
+                    textStyle: TextStyle(color: Colors.black),
+                    onValueChanged: (value){
+                      setState(() {
+                        dropdown = value;
+                      });
+                    },
                   ),
-                ),*/
+                ),
                 Container(
                   height: 50,
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -155,6 +178,7 @@ class _Register extends State<Register> {
                     onPressed: () {
                       print(_userName.text);
                       print(_passWord.text);
+                      // print(_name.text);
                       onRegister();
                     },
                   ),
@@ -163,3 +187,10 @@ class _Register extends State<Register> {
             )));
   }
 }
+String select = '';
+final typeAUSelect = TextEditingController();
+
+List<String> typeAU = [
+  "User",
+  "Admin",
+];

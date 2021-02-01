@@ -1,6 +1,9 @@
 import 'package:app/data/full.dart';
 import 'package:app/data/half.dart';
 import 'package:app/data/mini.dart';
+import 'package:app/tester/testaddtour.dart';
+import 'package:app/tester/testall.dart';
+import 'package:app/tester/testdata.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -34,6 +37,7 @@ class _Tournament extends State<Tournament> {
   }
 
   List<Widget> _uiList = List();
+
 //  int _id;
 //  Data _data = Data();
   // List<Data> data = List();
@@ -58,7 +62,15 @@ class _Tournament extends State<Tournament> {
       appBar: AppBar(
         centerTitle: true,
         title: Text('รายการวิ่ง'),
-
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
       ),
       body: ListView(
         children: <Widget>[
@@ -89,7 +101,7 @@ class _Tournament extends State<Tournament> {
                     ),
                     ListTile(
                       title: Text('Fun Run'),
-                      subtitle: Text('วิ่งระยะ 5 กิโลเมตร ภายในเวลา 1 วัน'),
+                      subtitle: Text('วิ่งระยะ 3-5 กิโลเมตร เหมาะสำหรับผู้เริ่มต้นออกกำลังกาย'),
                     ),
                   ],
                 ),
@@ -123,7 +135,7 @@ class _Tournament extends State<Tournament> {
                     ),
                     ListTile(
                       title: Text('Mini Marathon'),
-                      subtitle: Text('วิ่งระยะ 10 กิโลเมตร ภายในเวลา 3 วัน'),
+                      subtitle: Text('วิ่งระยะ 10-11 กิโลเมตร เหมาะสำหรับนักวิ่งเพื่อสุขภาพ'),
                     ),
                   ],
                 ),
@@ -157,7 +169,7 @@ class _Tournament extends State<Tournament> {
                     ),
                     ListTile(
                       title: Text('Half Marathon'),
-                      subtitle: Text('วิ่งระยะ 21 กิโลเมตร ภายในเวลา 5 วัน'),
+                      subtitle: Text('วิ่งระยะ 20-21 กิโลเมตร เหมาะสำหรับนักวิ่งขั้นกลาง'),
                     ),
                   ],
                 ),
@@ -191,7 +203,7 @@ class _Tournament extends State<Tournament> {
                     ),
                     ListTile(
                       title: Text('Marathon'),
-                      subtitle: Text('วิ่งระยะ 42 กิโลเมตร ภายในเวลา 7 วัน'),
+                      subtitle: Text('วิ่งระยะ 42 กิโลเมตร เหมาะสำหรับนักวิ่งมืออาชีพ'),
                     ),
                   ],
                 ),
@@ -202,13 +214,21 @@ class _Tournament extends State<Tournament> {
 
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context,MaterialPageRoute(builder: (context) => AddTournament()));
+      floatingActionButton:FloatingActionButton(
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddTournament()));
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
       ),
+      // _isAdmin == true ?
+      // FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(context,MaterialPageRoute(builder: (context) => AddTournament()));
+      //   },
+      //   child: Icon(Icons.add),
+      //   backgroundColor: Colors.red,
+      // ): Padding(padding: EdgeInsets.zero,),
     );
   }
 }

@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity(name = "all_run")
 public class AllRun {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "a_id")
     private int aid;
     @Column(name = "distance")
@@ -17,6 +17,4 @@ public class AllRun {
     private String time;
     @Column(name = "type")
     private String type;
-    @Column(name = "img")
-    private String img;
 }

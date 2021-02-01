@@ -11,6 +11,8 @@ class SystemInstance {
   int _userId;
   int _aid;
   String _userName;
+  String _name;
+  String _password;
 
   String get token => _token;
 
@@ -31,5 +33,13 @@ class SystemInstance {
   String get userName => _userName;
   set userName(String value){
     _userName = value;
+  }
+  String get name => _name;
+  set name(String value){
+    _name = value;
+  }
+  String get passWord => _password;
+  set passWord(String value){
+    _password = value;
   }
 }

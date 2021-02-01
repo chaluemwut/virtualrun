@@ -15,4 +15,6 @@ public class UserProfile {
     private String userName;
     @Column(name = "pass_word")
     private String passWord;
+    @Column
+    private String au;
 }

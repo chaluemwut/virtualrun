@@ -1,13 +1,25 @@
+import 'dart:convert';
 import 'dart:math';
 import 'file:///E:/virtualrun/app/lib/config/config.dart';
+import 'package:app/run/startrun.dart';
+import 'package:app/system/SystemInstance.dart';
+import 'package:app/tracker.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
+import 'package:app/maps.dart';
+import 'package:http/http.dart' as http;
 
 class Running extends StatefulWidget {
   static const routeName = '/running';
+  final int idrunner;
+  final String isType;
+
+  const Running({Key key, this.idrunner, this.isType}) : super(key: key);
+
+
 
   @override
   State<StatefulWidget> createState() {
@@ -18,61 +30,101 @@ class Running extends StatefulWidget {
 class _RunningState extends State<Running> {
   Completer<GoogleMapController> _controller = Completer();
   LocationData currentLocation;
+  double lat = 16.4329112;
+  double lng = 102.823361;
+  SystemInstance _systemInstance = SystemInstance();
+  int theId;
+  var theType;
+
+  void savePosition() {
+    Map params = Map();
+    //params['id'] = theId.toString();
+    params['lat'] = lat.toString();
+    params['lng'] = lng.toString();
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    http.post('${Config.API_URL}/test_save_latlng/save',headers: header, body: params).then((res) {
+      Map resMap = jsonDecode(res.body) as Map;
+      print(resMap);
+    });
+
+    setState(() {});
+
+}
 
   @override
   Widget build(BuildContext context) {
-
+    theType = widget.isType;
+    print(theType);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text('วิ่ง'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
       ),
-
       body: Padding(
         padding: EdgeInsets.all(10),
-          child: ListView(
-             children: <Widget>[
-               SizedBox(
-                 height: 450,
-                 width: 300,
-                 child: GoogleMap(
-                   myLocationEnabled: true,
-                   mapType: MapType.normal,
-                   initialCameraPosition: CameraPosition(
-                     target: LatLng(16.4329112, 102.823361),
-                     zoom: 12,
-                   ),
+          child: Container(
+            child: ListView(
+               children: <Widget>[
+                 SizedBox(
+                   height: 450,
+                   width: 300,
+                   child: GoogleMap(
+                     myLocationButtonEnabled: true,
+                     myLocationEnabled: true,
+                     mapType: MapType.normal,
+                     initialCameraPosition: CameraPosition(
+                       target: LatLng(lat, lng),
+                       zoom: 12,
+                     ),
 
-                   onMapCreated: (GoogleMapController controller) {
-                     _controller.complete(controller);
-                   },
-                 ),
-
-               ),
-
-               Container(
-                   height: 50,
-                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                   child: RaisedButton(
-                     textColor: Colors.white,
-                     color: Colors.blue,
-                     child: Text('เริ่มวิ่ง'),
-                     onPressed: () {
-                       //Navigator.push(context,
-                       //  MaterialPageRoute(builder: (context) => MapSample()));
+                     onMapCreated: (GoogleMapController controller) {
+                       _controller.complete(controller);
                      },
                    ),
 
-               ),
-             ],
-           ),
+                 ),
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(320, 10, 10, 10),
+                  //   child: FloatingActionButton.extended(
+                  //       onPressed: _goTome,
+                  //        label: Text(''),
+                  //       icon: Icon(Icons.gps_fixed)
+                  //   ),
+                  // ),
+
+                 Padding(
+                   padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                   child: Container(
+                       height: 50,
+                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                       child: RaisedButton(
+                         textColor: Colors.white,
+                         color: Colors.blue,
+                         child: Text('เริ่มวิ่ง'),
+                         onPressed: () {
+                           print("ID:${theId}");
+                           Navigator.push(context,
+                             MaterialPageRoute(builder: (context) => StartRun(myType: theType,)));
+                         },
+                       ),
+
+                   ),
+                 ),
+               ],
+             ),
+          ),
 
         ),
-      /*floatingActionButton: FloatingActionButton.extended(
-          onPressed: _goTome,
-          label: Text('My location'),
-          icon: Icon(Icons.gps_fixed)
-      ),*/
+
     );
   }
 
@@ -84,6 +136,9 @@ class _RunningState extends State<Running> {
       if (e.code == 'PERMISSION_DENIED') {
 
       }
+
+      lat = currentLocation.latitude;
+      lng = currentLocation.longitude;
       return null;
     }
   }
@@ -96,8 +151,11 @@ class _RunningState extends State<Running> {
       CameraPosition(
         target: LatLng(
             currentLocation.latitude,
-            currentLocation.longitude),
+            currentLocation.longitude
+
+        ),
         zoom: 18,
+
       ),
     ),
     );

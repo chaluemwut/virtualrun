@@ -1,11 +1,19 @@
+import 'package:app/gps/location.dart';
+import 'package:app/gps/stopwatch.dart';
+import 'package:app/ui/ranking.dart';
+import 'package:app/ui/rundata/datafun.dart';
+import 'package:app/ui/runner.dart';
 import 'package:app/ui/setting.dart';
+import 'package:app/ui/tabbar.dart';
+import 'package:app/ui/testpro.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../tracker.dart';
 import '../ui/profile.dart';
 import '../ui/running.dart';
 import '../ui/tournament.dart';
 import '../ui/report.dart';
-import '../Maps.dart';
+import '../maps.dart';
 
 class Launcher extends StatefulWidget {
   static const routeName = '/';
@@ -20,12 +28,25 @@ class _LauncherState extends State<Launcher> {
   int _selectedIndex = 0;
   List<Widget> _pageWidget = <Widget>[
     Tournament(),
-    Running(),
-    Profile(),
+    //StopWatch(),
+    //Running(),
+    //LocationScreen(),
+    Runner(),
     //MapSample(),
+    //Tracking(),
+
     Report(),
-    Setting(),
+    //TabBarScreen(),
+    RankingScreen(),
+    // TestRankingScreen(),
+    // DataFun(),
+    // TestPro(),
+    ProFile(),
+
+    // Setting(),
+
   ];
+
   List<BottomNavigationBarItem> _menuBar
   = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
@@ -37,16 +58,16 @@ class _LauncherState extends State<Launcher> {
       title: Text('วิ่ง'),
     ),
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.userAlt),
-      title: Text('บัญชีของฉัน'),
-    ),
-    BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.flagCheckered),
       title: Text('ส่งรายงาน'),
     ),
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.cog),
-      title: Text('ตั้งค่า'),
+      icon: Icon(FontAwesomeIcons.star),
+      title: Text('จัดอันดับ'),
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.userAlt),
+      title: Text('บัญชีของฉัน'),
     ),
   ];
 

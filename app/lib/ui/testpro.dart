@@ -9,12 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProFile extends StatefulWidget {
+class TestPro extends StatefulWidget {
   @override
-  _ProFileState createState() => _ProFileState();
+  _TestProState createState() => _TestProState();
 }
 
-class _ProFileState extends State<ProFile> {
+class _TestProState extends State<TestPro> {
   Screen size;
   String userName;
   var pickedFile;
@@ -166,20 +166,20 @@ class _ProFileState extends State<ProFile> {
   Align profileWidget() {
     return Align(
       alignment: Alignment.center,
-      child: Container(
-        margin: EdgeInsets.only(top: size.getWidthPx(60)),
-        child: CircleAvatar(
-          foregroundColor: Colors.white,
-          maxRadius: size.getWidthPx(50),
-          backgroundColor: Colors.white,
+        child: Container(
+          margin: EdgeInsets.only(top: size.getWidthPx(60)),
           child: CircleAvatar(
-            maxRadius: size.getWidthPx(48),
-            foregroundColor: Color.fromRGBO(97, 10, 155, 0.6),
-            backgroundImage: NetworkImage(
-                'https://www.img.in.th/images/db548302a0dced5295399866fcd9594c.jpg'),
+            foregroundColor: Colors.white,
+            maxRadius: size.getWidthPx(50),
+            backgroundColor: Colors.white,
+            child: CircleAvatar(
+              maxRadius: size.getWidthPx(48),
+              foregroundColor: Color.fromRGBO(97, 10, 155, 0.6),
+              backgroundImage: NetworkImage(
+                  'https://www.img.in.th/images/db548302a0dced5295399866fcd9594c.jpg'),
+            ),
           ),
         ),
-      ),
     );
   }
 }
