@@ -22,8 +22,10 @@ class Register extends StatefulWidget {
 class _Register extends State<Register> {
   TextEditingController _userName = TextEditingController();
   TextEditingController _passWord = TextEditingController();
-  // TextEditingController _name = TextEditingController();
+  TextEditingController _name = TextEditingController();
+  TextEditingController _tel = TextEditingController();
   String dropdown = 'User';
+  String au = 'User';
 
   // TextEditingController _conFirmPassWord = TextEditingController();
   // int id;
@@ -49,8 +51,9 @@ class _Register extends State<Register> {
     Map params = Map();
     params['userName'] = _userName.text;
     params['passWord'] = _passWord.text;
-    // params['name'] = _name.text;
-    params['au'] = dropdown;
+    params['name'] = _name.text;
+    params['tel'] = _tel.text;
+    params['au'] = au.toString();
     //params['confirmPassWord'] = _conFirmPassWord.text;
 
     http.post('${Config.API_URL}/user_profile/save', body: params).then((res) {
@@ -59,56 +62,59 @@ class _Register extends State<Register> {
       //id = resMap['getId'];
       if (data == 0) {
         print("hello");
-        Widget okButton = FlatButton(
-          child: Text("ปิด"),
-          onPressed: () => Navigator.of(context).pop(),
-        );
-        AlertDialog alert = AlertDialog(
-          content: Text("มีชื่อผู้ใช้อยู่แล้ว."),
-          actions: [
-            okButton,
-          ],
-        );
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          },
-        );
+        showCustomDialog(context);
       } else {
         // SystemInstance systemInstance = SystemInstance();
         // systemInstance.name = _name.text;
-        Widget okButton = FlatButton(
-          child: Text("ปิด"),
-          onPressed: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Login())),
-        );
-        AlertDialog alert = AlertDialog(
-          content: Text("บักทึกสำเร็จ."),
-          actions: [
-            okButton,
-          ],
-        );
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          },
-        );
+        showCustomDialogPass(context);
       }
     });
 
     setState(() {});
   }
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('มีชื่อผู้ใช้หรือรหัสผ่านนี้อยู่แล้ว'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
+  Future showCustomDialogPass(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('บันทึกสำเร็จ'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Login())),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('สมัครสมาชิก'),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('สมัครสมาชิก'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.cyan],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
         ),
+      ),
         body: Padding(
             padding: EdgeInsets.all(10),
             child: ListView(
@@ -117,8 +123,11 @@ class _Register extends State<Register> {
                     alignment: Alignment.center,
                     padding: EdgeInsets.all(10),
                     child: Text(
-                      'สมัครสมาชิก',
-                      style: TextStyle(fontSize: 20),
+                      'กรอกข้อมูลให้ครบถ้วน',
+                      style: TextStyle(
+                        color: Colors.blue,
+                          fontSize: 20,
+                      ),
                     )),
                 Container(
                   padding: EdgeInsets.all(10),
@@ -127,6 +136,9 @@ class _Register extends State<Register> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'ชื่อผู้ใช้',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -138,34 +150,37 @@ class _Register extends State<Register> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'รหัสผ่าน',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
 
-                // Container(
-                //   padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                //   child: TextField(
-                //     controller: _name,
-                //     decoration: InputDecoration(
-                //       border: OutlineInputBorder(),
-                //       labelText: 'ชื่อโปรไฟล์',
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                  child: DropDownField(
-                    controller: typeAUSelect,
-                    hintText: "เลือกรายการที่ลงสมัคร",
-                    enabled: true,
-                    itemsVisibleInDropdown: 5,
-                    items: typeAU,
-                    textStyle: TextStyle(color: Colors.black),
-                    onValueChanged: (value){
-                      setState(() {
-                        dropdown = value;
-                      });
-                    },
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: TextField(
+                    controller: _name,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ชื่อโปรไฟล์',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: TextField(
+                    controller: _tel,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'เบอร์โทรศัพท์',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ),
                 Container(
@@ -184,7 +199,9 @@ class _Register extends State<Register> {
                   ),
                 ),
               ],
-            )));
+            )
+        ),
+    );
   }
 }
 String select = '';

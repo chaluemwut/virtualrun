@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:permission/permission.dart';
+import 'package:provider/provider.dart';
 
 import 'package:app/config/config.dart';
 import 'package:app/gps/stopwatch.dart';
@@ -23,7 +25,6 @@ class StartRun extends StatefulWidget {
 
 class _StartState extends State<StartRun> {
   var startTime = 0;
-  var locationMassage ="";
 
   SystemInstance _systemInstance = SystemInstance();
 
@@ -35,7 +36,7 @@ class _StartState extends State<StartRun> {
   String _lng = "";
   String _lat = "";
 
-  List _listSum = List();
+
 
   Map map = {};
   Map sum = {};
@@ -57,38 +58,50 @@ class _StartState extends State<StartRun> {
   var userId;
   var dataCal;
   var theType;
+  var myId;
+  var allRunId;
+  var id;
+  var myDate;
+  StreamSubscription<LocationData> locationSubscription;
+
 
   @override
   void initState() {
     // TODO: implement initState
+    SystemInstance systemInstance = SystemInstance();
+    myId = systemInstance.userId;
+    allRunId = widget.startId;
+    DateTime dateNow = DateTime.now();
+    myDate = "${dateNow.day}/${dateNow.month}/${dateNow.year}";
+    print("aidid = $allRunId");
     calculate();
     _fileUtil.readFile().then((value){
       this.userId = value;
       print("UserID:${userId}");
     });
-    _location.onLocationChanged().listen((locationData) {
-      String lng = "${locationData.longitude.toStringAsFixed(6)}";
-      String lat = "${locationData.latitude.toStringAsFixed(6)}";
+    locationSubscription = _location.onLocationChanged().listen((locationData) {
+      String lng = "${locationData.longitude}";
+      String lat = "${locationData.latitude}";
       if (lng != _lng && lat != _lat) {
         print("on location change...");
         print("data lat ${locationData.latitude} .....");
         print("data lng ${locationData.longitude} .....");
-        //calculate();
-
         _lng = lng;
         _lat = lat;
-        Map params = Map();
-        //print("startID: ${theStartId}");
-        params['lat'] = lat.toString();
-        params['lng'] = lng.toString();
-        params['userId'] = userId.toString();
-        Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-        http.post('${Config.API_URL}/save_runner/save',headers: header, body: params).then((res) {
-          Map resMap = jsonDecode(res.body) as Map;
-          print(resMap);
-        });
+        // calculate();
+        // Map params = Map();
+        // print("ccc");
+        // params['lat'] = lat.toString();
+        // params['lng'] = lng.toString();
+        // params['userId'] = myId.toString();
+        // params['id'] = allRunId.toString();
+        // params['dateNow'] = myDate.toString();
+        // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+        // http.post('${Config.API_URL}/save_position/save',headers: header, body: params).then((res) {
+        //   Map resMap = jsonDecode(res.body) as Map;
+        //   print(resMap);
+        // });
       }
-
     });
     super.initState();
   }
@@ -106,6 +119,7 @@ class _StartState extends State<StartRun> {
   //   }
   // }
 
+//-------------------------calculate distance---------------------------------//
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -117,26 +131,21 @@ class _StartState extends State<StartRun> {
   }
 
   void calculate() {
+    print('aaa');
+
     Map params = Map();
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/save_runner/load', headers: header,body: params).then((res) {
-      //print("xxx");
+    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId', headers: header, body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
-      //print('resMap:  ${resMap}');
       var data = resMap['data'];
-      //print('data:   ${data}');
+      List _listSum = List();
+      print(data);
       for (var i in data) {
-        //print('i: ${i}');
         var lat = i['lat'];
         var lng = i['lng'];
         map = {'lat': lat, 'lng': lng};
-       // print("Map:${map}");
         _listSum.add(map);
-        // resLat = i['lat'].toStringAsFixed(7);
-        // resLng = i['lng'].toStringAsFixed(7);
       }
-      //print(_listSum);
-     // print(_listSum.runtimeType);
       double totalDistance = 0;
       for (var i = 0; i < _listSum.length - 1; i++) {
         totalDistance +=
@@ -144,23 +153,15 @@ class _StartState extends State<StartRun> {
                 _listSum[i + 1]["lat"], _listSum[i + 1]["lng"]);
       }
       distanceMessage = totalDistance.toStringAsFixed(2);
-      // paceDis = double.parse(distanceMessage);
-      // print("fsdf${paceDis}");
-      setState(() {
-
-        //print('${distanceMessage}Km');
-      });
-      return distanceMessage;
+      // return distanceMessage;
     });
-
   }
+//----------------------------------------------------------------------------//
 
-
-
+//-----------------------------stopwatch--------------------------------------//
   void starttimer(){
     Timer(dur, keeprunning);
   }
-
   void keeprunning(){
     if(swatch.isRunning){
       starttimer();
@@ -195,7 +196,7 @@ class _StartState extends State<StartRun> {
     swatch.reset();
     timer = "00:00:00";
   }
-
+//----------------------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
@@ -312,10 +313,11 @@ class _StartState extends State<StartRun> {
                           iconSize: 100,
                           onPressed: () {
                             stopstopwatch();
+                            locationSubscription.cancel();
                             print("type:${theType}");
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => Pause(kmData: distanceMessage,timeData: timer,myType: theType,)));
+                                MaterialPageRoute(builder: (context) => Pause(kmData: distanceMessage,timeData: timer,myType: theType,id: allRunId,)));
                           },
                         ),
                       ),
@@ -332,7 +334,3 @@ class _StartState extends State<StartRun> {
     );
   }
 }
-
-
-
-

@@ -1,5 +1,7 @@
 import 'dart:io';
-
+import 'dart:ui';
+import 'package:cool_alert/cool_alert.dart';
+import 'package:dio/dio.dart';
 import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:app/config/config.dart';
@@ -10,6 +12,10 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 
 
 class AddTournament extends StatefulWidget {
@@ -27,12 +33,37 @@ class _AddTournament extends State<AddTournament> {
   DateTime _dateTime = new DateTime.now();
   var myDate = 'ยังไม่ได้เลือก';
   var myEndDate = 'ยังไม่ได้เลือก';
-
+  TextEditingController nameAll = TextEditingController();
   TextEditingController km = TextEditingController();
   TextEditingController time = TextEditingController();
   String dropdown = 'Fun Run';
   SystemInstance _systemInstance = SystemInstance();
+  File _image;
+  File _f;
+  final picker = ImagePicker();
+  var pickedFile;
 
+
+
+  // defaultImage() async {
+  //   _f = await getImageFileFromAssets('NoImage.png');
+  // }
+  //
+  // Future<File> getImageFileFromAssets(String path) async {
+  //   final byteData = await rootBundle.load('images/$path');
+  //   final file = File('${(await getTemporaryDirectory()).path}/$path');
+  //   await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+  //   return file;
+  // }
+
+  Future getImage() async{
+    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
   Future showCustomDialog(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -47,19 +78,31 @@ class _AddTournament extends State<AddTournament> {
   );
 
   void add() {
-    Map params = Map();
+    Dio dio = Dio();
+    Map<String, dynamic> params = Map();
+    params['nameAll'] = nameAll.text;
     params["distance"] = km.text;
     params["type"] = dropdown;
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/test_all/save',headers: header, body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
+    params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
+    FormData formData = FormData.fromMap(params);
+    // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
+    print("adsad${dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}"}");
+    dio.post('${Config.API_URL}/test_all/update',data: formData).then((res) {
+      Map resMap = jsonDecode(res.toString()) as Map;
       // SystemInstance systemInstance = SystemInstance();
       // systemInstance.aid = resMap["aid"];
       // _fileUtil.writeFile(systemInstance.aid);
-      showCustomDialog(context);
-      setState(() {});
+      var data = resMap['status'];
+      if(data == 1){
+        showCustomDialog(context);
+        setState(() {});
+      }else{
+        CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+      }
+
     });
   }
 
@@ -94,6 +137,13 @@ class _AddTournament extends State<AddTournament> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    // defaultImage();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     print(myDate);
     return Scaffold(
@@ -114,6 +164,33 @@ class _AddTournament extends State<AddTournament> {
             padding: EdgeInsets.all(10),
             child: ListView(
               children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: nameAll,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ชื่อรายการวิ่ง',
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  child: DropDownField(
+                    controller: typeRunSelect,
+                    hintText: "เลือกรายการที่เปิดรับสมัคร",
+                    enabled: true,
+                    itemsVisibleInDropdown: 5,
+                    items: typeRun,
+                    textStyle: TextStyle(color: Colors.black),
+                    onValueChanged: (value){
+                      setState(() {
+                        dropdown = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 24),
                 Container(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -146,7 +223,7 @@ class _AddTournament extends State<AddTournament> {
                             color: Colors.green,
                             onPressed: () => _selectDate(context),
                           ),
-                          Text("${myDate}"),
+                          Text("${myDate}",style: TextStyle(color: Colors.green),),
                         ],
                       ),
                     ),
@@ -160,30 +237,38 @@ class _AddTournament extends State<AddTournament> {
                             color: Colors.red,
                             onPressed: () => _selectEndDate(context),
                           ),
-                          Text("${myEndDate}"),
+                          Text("${myEndDate}",style: TextStyle(color: Colors.red),),
                         ],
                       ),
                     ),
                   ],
                 ),
                 // SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
-                  child: DropDownField(
-                    controller: typeRunSelect,
-                    hintText: "เลือกรายการที่เปิดรับสมัคร",
-                    enabled: true,
-                    itemsVisibleInDropdown: 5,
-                    items: typeRun,
-                    textStyle: TextStyle(color: Colors.black),
-                    onValueChanged: (value){
-                      setState(() {
-                        dropdown = value;
-                      });
-                    },
+                Container(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Center(
+                    child: _image == null ? Container(
+                      child: Center(
+                        child: Text('เลือกรูปภาพ'),
+                      ),
+                      color: Colors.grey[200],
+                      width: 250.0,
+                      height: 250.0,
+                    ):Image.file(_image),
                   ),
                 ),
-                SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                  child: Container(
+
+                    child: RaisedButton.icon(
+                      label: Text('เพิ่มรูปภาพ'),
+                      icon: Icon(Icons.add_a_photo),
+                      onPressed: getImage,
+                    ),
+                  ),
+                ),
+
                 Container(
                     height: 50,
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -192,7 +277,12 @@ class _AddTournament extends State<AddTournament> {
                       color: Colors.blue,
                       child: Text('เพิ่ม'),
                       onPressed: () {
-                        add();
+                        if(nameAll.text.isNotEmpty|dropdown.isNotEmpty|km.text.isNotEmpty|myDate.isNotEmpty|myEndDate.isNotEmpty){
+                          add();
+                        }else{
+                          CoolAlert.show(context: context, type: CoolAlertType.warning, text: 'กรุณากรอกข้อมูลให้ครบถ้วน');
+                        }
+
                       },
                     )
                 ),

@@ -57,51 +57,19 @@ class _RegisterRun extends State<RegisterRun> {
       )
   );
 
-  void onRegisterRun() {
-    Map params = Map();
-    // params['userNameFun'] = userNameFun.text;
-    // params['passWordFun'] = passWordFun.text;
-    // params['km'] = km.toString();
-    // params['time'] = time.toString();
-    params['aid'] = aID.toString();
-    params['userId'] = userId.toString();
-    params['distancing'] = _distancing.toString();
-    print(params);
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/user_run/save_run',headers: header, body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-      showCustomDialog(context);
-    });
-    setState(() {});
-  }
 
   void onClick(){
     Map params = Map();
     params['id'] = aID.toString();
     params['userId'] = userId.toString();
     print(params);
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/test_run/save_run',headers: header, body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-      Widget okButton = FlatButton(
-        child: Text("ปิด"),
-        onPressed: () => Navigator.of(context).pop(),
-      );
-      AlertDialog alert = AlertDialog(
-        content: Text("บันทึกสำเร็จ."),
-        actions: [
-          okButton,
-        ],
-      );
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    });
+    // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    // http.post('${Config.API_URL}/test_run/save_run',headers: header, body: params).then((res) {
+    //   Map resMap = jsonDecode(res.body) as Map;
+    //   print(resMap);
+    //
+    // });
+    showCustomDialog(context);
     setState(() {});
   }
 

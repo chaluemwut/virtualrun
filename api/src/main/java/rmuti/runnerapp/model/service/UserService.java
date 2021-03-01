@@ -26,18 +26,23 @@ public class UserService {
 
     public Optional<Map<String, Object>> login(LoginBean loginBean) {
         UserProfile userProfile = userProfileRepository.findByUserName(loginBean.getUsername());
+        Map<String, Object> ret = new HashMap<>();
         if (userProfile != null) {
             String userPassWord = userProfile.getPassWord();
+
             if (encoderUtil.passwordEncoder().matches(loginBean.getPassword(), userPassWord)) {
-                Map<String, Object> ret = new HashMap<>();
+
                 ret.put("data", 1);
                 ret.put("token", tokenService.createToken(userProfile));
                 ret.put("userId", userProfile.getUserId());
                 return Optional.of(ret);
             } else {
-                return Optional.empty();
+                ret.put("data", 0);
+                return Optional.of(ret);
             }
+        }else {
+            ret.put("data", 0);
         }
-        return Optional.empty();
+        return Optional.of(ret);
     }
 }

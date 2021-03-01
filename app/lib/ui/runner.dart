@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:app/config/config.dart';
+import 'package:app/run/km.dart';
 import 'package:app/system/SystemInstance.dart';
+import 'package:app/ui/rundata/datarunner.dart';
 import 'package:app/ui/running.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:loading/loading.dart';
 
 class Runner extends StatefulWidget {
   @override
@@ -25,32 +29,16 @@ class _RunnerState extends State<Runner> {
   var isType;
   var dateS;
   var dateE;
-
-  // Future _getDataIn() {
-  //
-  //   Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-  //   http.post('${Config.API_URL}/user_run/test_show?userId=8',headers: header).then((res) {
-  //     Map resMap = jsonDecode(res.body) as Map;
-  //     print(resMap);
-  //     var _data = resMap["data"];
-  //     print("_data: ${_data}");
-  //     //_listData = _data;
-  //     for(var i in _data){
-  //       DataRun run = DataRun(
-  //           i["aid"],
-  //           i["distance"],
-  //           i["time"],
-  //           i["type"]
-  //       );
-  //       dataRuns.add(run);
-  //     }
-  //     print("Run: ${dataRuns}");
-  //     return dataRuns;
-  //   });
-  //
-  // }
+  var distance;
+  List aaa = List();
+  List<DataRunner> _listKm = List();
+  SystemInstance _instance = SystemInstance();
   @override
   void initState(){
+    SystemInstance systemInstance = SystemInstance();
+    id = systemInstance.userId;
+    print(id);
+    print(_systemInstance.token);
 
     super.initState();
   }
@@ -63,13 +51,15 @@ class _RunnerState extends State<Runner> {
     // print(_data);
     // print(sum);
     for(var i in sum){
-      // print(i);
+      print(i);
       DataRun run = DataRun(
           i["id"],
+          i["nameAll"],
           i["distance"],
           i["type"],
           i["dateStart"],
           i["dateEnd"],
+          i["imgAll"],
       );
       // print("sada: ${run}");
       dataRuns.add(run);
@@ -93,8 +83,7 @@ class _RunnerState extends State<Runner> {
 
   @override
   Widget build(BuildContext context) {
-    SystemInstance systemInstance = SystemInstance();
-    id = systemInstance.userId;
+
     // print("ID${id}");
     //show();
     return Scaffold(
@@ -111,17 +100,20 @@ class _RunnerState extends State<Runner> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                child:
-                FutureBuilder(
+      body: Container(
+          child:FutureBuilder(
                     future: _getData(),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                          if(snapshot.data == null){
-                           return Padding(padding: EdgeInsets.all(0),);
+                           return Center(
+                             child: Padding(
+                               padding: EdgeInsets.all(0),
+                               child: Loading(
+                                 indicator: BallPulseIndicator(),
+                                 size: 100.0,color: Colors.pink,
+                               ),
+                             ),
+                           );
                          } else {
                            return ListView.builder(
                                shrinkWrap: true,
@@ -133,13 +125,24 @@ class _RunnerState extends State<Runner> {
                                        borderRadius:
                                        BorderRadius.all(Radius.circular(8.0))),
                                    child: ListTile(
-                                     leading: Icon(Icons.add_circle),
-                                     title: Text('ระยะทาง ' + snapshot.data[index].distance +' กิโลเมตร'),
+                                     leading: Container(
+                                       height: 50.0,
+                                       width: 50.0,
+                                       child: FadeInImage(
+                                         placeholder: AssetImage('assets/images/loading.gif'),
+                                         image: NetworkImage(
+                                             '${Config.API_URL}/test_all/image?imgAll=${snapshot.data[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                                         ),
+                                         fit: BoxFit.cover,
+                                       ),
+                                     ),
+                                     title: Text('${snapshot.data[index].nameAll}'),
                                      subtitle: Text(' จากวันที่ ' + snapshot.data[index].dateStart + ' ถึงวันที่ '
                                          + snapshot.data[index].dateEnd),
                                      onTap: () {
-                                       int aaId = id;
-                                       print(aaId);
+                                       int aaId = snapshot.data[index].id;
+                                       print("allRunId = $aaId");
+                                       distance = snapshot.data[index].distance;
                                        isType = snapshot.data[index].type;
                                        dateS = snapshot.data[index].dateStart;
                                        dateE = snapshot.data[index].dateEnd;
@@ -155,13 +158,18 @@ class _RunnerState extends State<Runner> {
                                        var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
                                        var de2d = new DateFormat('dd/mm/yyyy').parse(de);
                                        print(ds2d);
-                                       if((s2date==ds2d || s2date.isAfter(ds2d)) && (s2date==de2d || s2date.isBefore(de2d))){
+                                       if((s2date==s2dateN || s2date.isAfter(s2dateN)) && (s2date==s2dateN || s2date.isBefore(s2dateN))){
                                          print('0');
+                                         // Navigator.push(
+                                         //     context,
+                                         //     MaterialPageRoute(
+                                         //         builder: (BuildContext context) =>
+                                         //             Running(idrunner: aaId,isType:isType)));
                                          Navigator.push(
                                              context,
                                              MaterialPageRoute(
                                                  builder: (BuildContext context) =>
-                                                     Running(idrunner: aaId,isType:isType)));
+                                                     KilometerScreen(id: aaId,type:isType,km:distance ,)));
                                        }else{
                                          print('1');
                                          showCustomDialog(context);
@@ -172,99 +180,22 @@ class _RunnerState extends State<Runner> {
                                });
                          }
                     }),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 }
 
 class DataRun {
   final int id;
+  final String nameAll;
   final String distance;
   final String type;
   final String dateStart;
   final String dateEnd;
+  final String imgAll;
+
+  DataRun(this.id, this.nameAll, this.distance, this.type, this.dateStart, this.dateEnd, this.imgAll);
 
 
-  DataRun(this.id, this.distance, this.type, this.dateStart, this.dateEnd);
 
-}
-
-class TheRunnerData extends StatefulWidget {
-  @override
-  _TheRunnerDataState createState() => _TheRunnerDataState();
-}
-
-class _TheRunnerDataState extends State<TheRunnerData> {
-  SystemInstance _systemInstance = SystemInstance();
-  List<DataRun> reruns = List();
-  var aa = 20;
-  final List<dynamic> _list = List<String>.generate(20, (index) => "Item: ${++index}");
-  List _lst = List();
-  Map _map={};
-  List _listData = List();
-
-  @override
-  void initState() {
-    _getDataIn();
-    super.initState();
-  }
-
-  void _getDataIn() {
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/user_run/test_show?userId=8',headers: header).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-      var _data = resMap["data"];
-      print("_data: ${_data}");
-      _listData = _data;
-      for (var i in _data) {
-        print("I:${i}");
-        var aid = i["aid"];
-        var distance = i["distance"];
-        var time = i["time"];
-        var type = i["type"];
-        _map = {'aid': aid, 'distance': distance, 'time': time, 'type': type};
-        _lst.add(_map);
-      }
-      print("fsfd${_listData}");
-      print("List: ${_lst}");
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("test"),
-      ),
-      body: Container(
-        child: ListView.builder(
-            itemCount: _lst.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  Card(
-                    child: InkWell(
-                      onTap: () => {
-                        // Navigator.push(context,
-                        //     MaterialPageRoute(builder: (context) => Half())),
-                      },
-                      child: ListTile(
-                        leading: Icon(Icons.access_alarm),
-                        title: Text('ระยะทาง '' กิโลเมตร'+' ภายใน '' วัน'),
-                        subtitle: Text("Cfds"),
-                        trailing: Icon(Icons.map),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }),
-      ),
-    );
-  }
 }

@@ -3,13 +3,13 @@ import 'dart:math';
 import 'file:///E:/virtualrun/app/lib/config/config.dart';
 import 'package:app/run/startrun.dart';
 import 'package:app/system/SystemInstance.dart';
-import 'package:app/tracker.dart';
+import 'file:///E:/virtualrun/app/lib/test/tracker.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
-import 'package:app/maps.dart';
+import 'file:///E:/virtualrun/app/lib/test/maps.dart';
 import 'package:http/http.dart' as http;
 
 class Running extends StatefulWidget {
@@ -35,25 +35,13 @@ class _RunningState extends State<Running> {
   SystemInstance _systemInstance = SystemInstance();
   int theId;
   var theType;
-
-  void savePosition() {
-    Map params = Map();
-    //params['id'] = theId.toString();
-    params['lat'] = lat.toString();
-    params['lng'] = lng.toString();
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/test_save_latlng/save',headers: header, body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-    });
-
-    setState(() {});
-
-}
+  var allRunId;
 
   @override
   Widget build(BuildContext context) {
     theType = widget.isType;
+    allRunId = widget.idrunner;
+    print(allRunId);
     print(theType);
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +63,7 @@ class _RunningState extends State<Running> {
             child: ListView(
                children: <Widget>[
                  SizedBox(
-                   height: 450,
+                   height: 580,
                    width: 300,
                    child: GoogleMap(
                      myLocationButtonEnabled: true,
@@ -105,7 +93,6 @@ class _RunningState extends State<Running> {
                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                    child: Container(
                        height: 50,
-                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                        child: RaisedButton(
                          textColor: Colors.white,
                          color: Colors.blue,
@@ -113,7 +100,7 @@ class _RunningState extends State<Running> {
                          onPressed: () {
                            print("ID:${theId}");
                            Navigator.push(context,
-                             MaterialPageRoute(builder: (context) => StartRun(myType: theType,)));
+                             MaterialPageRoute(builder: (context) => StartRun(myType: theType,startId: allRunId,)));
                          },
                        ),
 

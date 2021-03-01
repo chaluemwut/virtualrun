@@ -13,13 +13,15 @@ import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart'as http;
+import 'package:intl/intl.dart';
 
 class Pause extends StatefulWidget {
   final String kmData;
   final String timeData;
   final String myType;
+  final int id;
 
-  const Pause({Key key, this.kmData, this.timeData,this.myType}) : super(key: key);
+  const Pause({Key key, this.kmData, this.timeData,this.myType,this.id}) : super(key: key);
   @override
   _PauseState createState() => _PauseState();
 }
@@ -36,6 +38,8 @@ class _PauseState extends State<Pause> {
   var sum = 0;
   var consum;
   var sumk = 0.0;
+  var sumkm;
+  var disAll = 0.0;
 
   var totalTime;
   var douTime;
@@ -53,44 +57,113 @@ class _PauseState extends State<Pause> {
   List<DataRunner> _listData = [];
   List aaa = List();
   List bbb = List();
+  List load = List();
+  var _loadData;
 
   DateTime _dateTime = new DateTime.now();
   var date;
+  var allRunId;
+  var myId;
+  var img;
+  var name;
+  var nameAll;
 
 
   @override
   void initState(){
     print(theKm);
-
+    allRunId = widget.id;
+    SystemInstance systemInstance = SystemInstance();
+    myId = systemInstance.userId;
     _fileUtil.readFile().then((value){
       this.userId = value;
       print("UserID:${userId}");
     });
-    //cals = 68.83*3.02*1.306;
-    // print(theKm);
     super.initState();
+    loadData1();
     calculate();
+    _getData();
+    getAll();
+    getImg();
+    // saveSuccess();
   }
+
+  Future _getData() async {
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_data/show?userId=${myId}&id=${allRunId}',headers: header);
+    var _data = jsonDecode(data.body);
+    print(_data);
+    for (var i in _data) {
+      DataRunner dataRunner = DataRunner(
+        i["did"],
+        i["userId"],
+        i["id"],
+        i["km"],
+        i["time"],
+        i["type"],
+        i["dateNow"],
+      );
+      aaa.add(i["time"]);
+      bbb.add(i["km"]);
+      _listData.add(dataRunner);
+      print(aaa);
+      print(bbb);
+    }
+    for (var i in aaa) {
+      var hh = i.substring(0, 2);
+      var mm = i.substring(3, 5);
+      var ss = i.substring(6, 8);
+
+      var h = int.parse(hh);
+      var m = int.parse(mm);
+      var s = int.parse(ss);
+
+
+      var htos = h * 60 * 60;
+      var mtos = m * 60;
+      var total = htos + mtos + s;
+
+      var hhTheTime = theTime.substring(0,2);
+      var mmTheTime = theTime.substring(3, 5);
+      var ssTheTime = theTime.substring(6, 8);
+
+      var hTheTime = int.parse(hhTheTime);
+      var mTheTime = int.parse(mmTheTime);
+      var sTheTime = int.parse(ssTheTime);
+
+      var htosTheTime = hTheTime * 60 * 60;
+      var mtosTheTime = mTheTime * 60;
+      var totalTheTime = htosTheTime + mtosTheTime + sTheTime;
+      sum = sum + total + totalTheTime;
+    }
+    var sstom = sum / 60;
+    var ssstom = "0${sstom}0";
+    var mmm = ssstom.toString().substring(0, 2);
+    var sss = ssstom.toString().substring(3, 5);
+    var ssss = "0.${sss}";
+    var stoi = double.parse(ssss);
+    var stos = stoi * 60;
+    var datas = stos.toStringAsFixed(0);
+    consum = "00:${mmm}:${datas}";
+
+    for (var i in bbb) {
+      var k = double.parse(i);
+      var zzz = NumberFormat('#0.0#');
+      sumk = sumk + k;
+      sumkm = zzz.format(sumk);
+    }
+    print(sumkm);
+    setState(() {
+      sum = sum;
+      sumkm = sumkm;
+    });
+    return _listData;
+  }
+
   void calculateCals(){
-    // print(theKm.runtimeType);
     var km = double.parse(theKm);
-    // //var times = double.parse(theTime);
-    // print(km);
-    // print(km.runtimeType);
     cals = 68.83*km*1.036;
     calories = cals.toInt();
-    // print(calories.runtimeType);
-    // print(calories);
-    // hh = theTime.substring(0,2);
-    // mm = theTime.substring(3,5);
-    // ss = theTime.substring(6,8);
-    // print('HH:${hh}');
-    // print('MM:${mm}');
-    // print('ss:${ss}');
-    // totalTime = "${mm}.${ss}";
-    // print(totalTime);
-    // douTime = double.parse(totalTime);
-    // print(douTime);
   }
 
   double calculateDistance(lat1, lon1, lat2, lon2) {
@@ -106,24 +179,15 @@ class _PauseState extends State<Pause> {
   void calculate() {
     Map params = Map();
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/save_runner/load', headers: header,body: params).then((res) {
-      //print("xxx");
+    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId', headers: header,body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
-      //print('resMap:  ${resMap}');
       var data = resMap['data'];
-      //print('data:   ${data}');
       for (var i in data) {
-        //print('i: ${i}');
         var lat = i['lat'];
         var lng = i['lng'];
         map = {'lat': lat, 'lng': lng};
-        // print("Map:${map}");
         _listSum.add(map);
-        // resLat = i['lat'].toStringAsFixed(7);
-        // resLng = i['lng'].toStringAsFixed(7);
       }
-      //print(_listSum);
-      // print(_listSum.runtimeType);
       double totalDistance = 0;
       for (var i = 0; i < _listSum.length - 1; i++) {
         totalDistance +=
@@ -131,62 +195,113 @@ class _PauseState extends State<Pause> {
                 _listSum[i + 1]["lat"], _listSum[i + 1]["lng"]);
       }
       distanceMessage = totalDistance.toStringAsFixed(2);
-      // paceDis = double.parse(distanceMessage);
-      // print("fsdf${paceDis}");
       setState(() {
-
-        //print('${distanceMessage}Km');
       });
       return distanceMessage;
     });
 
   }
 
-  void loadToPolyline(){
-    Map params = Map();
+  void loadData(){
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/save_runner/load', headers: header,body: params).then((res) {
-      print("xxx");
+    http.post('${Config.API_URL}/total_data/show?userId=$myId&id=$allRunId',headers: header).then((res){
       Map resMap = jsonDecode(res.body) as Map;
-      print('resMap:  ${resMap}');
+      print("load:${resMap}");
       var data = resMap['data'];
-      print('data:   ${data}');
-      for (var i in data) {
-        print('i: ${i}');
-        var lat = i['lat'];
-        var lng = i['lng'];
-        print("lat${lat}");
-        print("lat${lng}");
+      for(var i in data){
+        var _data = i['tid'];
+        // load.add(_data);
+        _loadData = _data;
       }
-      setState(() {
-      });
+      print(_loadData);
+    });
+    setState(() {
+
     });
   }
-  List<double> _list = [];
-  var point = <LatLng>[
-    LatLng(16.4464643,102.8492125),
-    LatLng(16.4467942,102.8494465),
-    LatLng(16.4472939,102.8496678),
-    LatLng(16.4475511,102.8497208),
-    LatLng(16.4479724,102.8497248),
-    LatLng(16.4484631,102.8496376),
-    LatLng(16.4489853,102.8494184),
-    LatLng(16.4493364,102.8494921),
-    LatLng(16.4511137,102.848984),
-    LatLng(16.4516719,102.8491409),
-    LatLng(16.4518861,102.8496344),
-    LatLng(16.4519758,102.8535971),
-    LatLng(16.4514739,102.8547799),
-    LatLng(16.4509434,102.8551825),
-    LatLng(16.4501508,102.8550715),
-    LatLng(16.4497263,102.8544097),
-    LatLng(16.4452104,102.8520371),
-    LatLng(16.4464643,102.8492125),
-  ];
+  Future loadData1()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/total_data/show?userId=$myId&id=$allRunId',headers: header);
+    var _data = jsonDecode(data.body);
+    print("loadD:${_data}");
+    for(var i in _data){
+      print(i);
+      var tid = i['tid'];
+      // load.add(tid);
+      _loadData = tid;
+    }
+    print(_loadData);
+    return _loadData;
+  }
+  Future getAll()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_all/show_id?id=$allRunId',headers: header);
+    var _data = jsonDecode(data.body);
+    for(var i in _data){
+      var dis = i['distance'];
+      nameAll = i['nameAll'];
+      disAll = double.parse(dis);
+    }
+    print("disdis$disAll");
+    print('nameAll$nameAll');
+    return disAll;
+  }
+  Future getImg()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/user_profile/show?userId=$myId',headers: header);
+    var _data = jsonDecode(data.body);
+    var sum = _data['data'];
+    for(var i in sum){
+      print(i);
+      img = i['imgProfile'];
+      name = i['name'];
+    }
+    print(img);
+    print(name);
+    setState(() {
+
+    });
+  }
 
   void saveToData(){
+    print(_loadData);
+    if(_loadData !=null){
+      print("notnull:${_loadData}");
+      Map params = Map();
+      params['tid'] = _loadData.toString();
+      params['userId']= userId.toString();
+      params['id'] = allRunId.toString();
+      params['km'] = distanceMessage.toString();
+      params['time'] = consum.toString();
+      params['type'] = theType.toString();
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      http.post('${Config.API_URL}/total_data/update',headers: header,body: params).then((res){
+        Map resMap = jsonDecode(res.body) as Map;
+        print(resMap);
+      });
+    }else{
+      print("null:${_loadData}");
+      Map params = Map();
+      params['userId']= userId.toString();
+      params['id'] = allRunId.toString();
+      params['km'] = distanceMessage.toString();
+      params['time'] = theTime.toString();
+      params['type'] = theType.toString();
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      http.post('${Config.API_URL}/total_data/update',headers: header,body: params).then((res){
+        Map resMap = jsonDecode(res.body) as Map;
+        print(resMap);
+      });
+    }
+
+    setState(() {
+
+    });
+  }
+  void saveInData(){
     Map params = Map();
     params['userId'] = userId.toString();
+    params['id'] = allRunId.toString();
     params['km'] = distanceMessage.toString();
     params['time'] = theTime.toString();
     params['type'] = theType.toString();
@@ -200,6 +315,46 @@ class _PauseState extends State<Pause> {
 
     });
   }
+  void saveSuccess(){
+    print("distance$distanceMessage");
+    print("disAll$disAll");
+    var dis = double.parse(distanceMessage);
+    print(dis);
+    if(dis >= disAll){
+      print('dis');
+      Map params = Map();
+      params['userId']= userId.toString();
+      params['name'] = name.toString();
+      params['nameAll'] = nameAll.toString();
+      params['km'] = distanceMessage.toString();
+      params['time'] = theTime.toString();
+      params['type'] = theType.toString();
+      params['imgRanking'] = img.toString();
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      http.post('${Config.API_URL}/ranking/save',headers: header,body: params).then((res){
+        Map resMap = jsonDecode(res.body) as Map;
+        print(resMap);
+      });
+    }else{
+      print("dhdh");
+    }
+  setState(() {
+
+  });
+  }
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('หยุดวิ่งแล้ว'),
+        actions: [
+
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด',),
+          )
+        ],
+      )
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +364,6 @@ class _PauseState extends State<Pause> {
     theType = widget.myType;
     print("tpe:${theType}");
     calculateCals();
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -230,7 +384,7 @@ class _PauseState extends State<Pause> {
           child: ListView(
             children: <Widget>[
               SizedBox(
-                height: 200,
+                height: 380,
                 width: 300,
                 child: GoogleMap(
                   myLocationEnabled: true,
@@ -243,20 +397,13 @@ class _PauseState extends State<Pause> {
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                   },
-                  polylines: {
-                    Polyline(
-                        polylineId: PolylineId("p1"),
-                        color: Colors.blue,
-                        points: point
-                    )
-                  },
                 ),
 
               ),
 
               Container(
                child: Padding(
-                 padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                  child: Column(
                    children: [
                      Row(
@@ -270,7 +417,7 @@ class _PauseState extends State<Pause> {
 
                          ),
                          Expanded(
-                           child: Text('${theTime}',textAlign: TextAlign.center,style: TextStyle(fontSize: 32),),
+                           child: Text('${theTime}',textAlign: TextAlign.center,style: TextStyle(fontSize: 28),),
                          ),
                        ],
                      ),
@@ -341,13 +488,17 @@ class _PauseState extends State<Pause> {
                                  color: Colors.white,
                                  iconSize: 100,
                                  onPressed: () {
-                                   //saveToData();
-                                     Navigator.pushReplacement(
-                                         context,
-                                         MaterialPageRoute(builder: (context) => ShowDataScreen(myType: theType,myCal: calories,)));
-                                   // Navigator.pop(context);
-                                   // Navigator.pop(context);
-                                   // Navigator.pop(context);
+                                   // saveToData();
+                                   // saveInData();
+                                   // saveSuccess();
+                                   showCustomDialog(context);
+                                     // Navigator.pushReplacement(
+                                     //     context,
+                                     //     MaterialPageRoute(builder: (context) => ShowDataScreen(km: distanceMessage,myCal: calories,time: consum,)));
+                                   Navigator.pop(context);
+                                   Navigator.pop(context);
+                                   Navigator.pop(context);
+                                   Navigator.pop(context);
                                  },
                                ),
                              ),

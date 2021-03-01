@@ -1,6 +1,8 @@
 
 import 'package:app/ui/profile.dart';
 import 'package:app/ui/tournament.dart';
+import 'package:app/user/regisadmin.dart';
+import 'package:app/user/select.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/config/config.dart';
@@ -10,6 +12,7 @@ import 'package:app/util/file_util.dart';
 import 'package:app/system/SystemInstance.dart';
 import 'package:app/main.dart';
 import 'package:app/user/register.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Login extends StatefulWidget {
@@ -31,9 +34,7 @@ class _Login extends State<Login> {
   var userNameWrtie;
   var passWordWrite;
   var textRead;
-
   FileUtil _fileUtil = FileUtil();
-  SystemInstance _systemInstance = SystemInstance();
 
   // Future<File> saveToFile() async{
   //   setState(() {
@@ -51,26 +52,23 @@ class _Login extends State<Login> {
         print("UserID: ${textRead}");
       });
     });
-    loadData();
-  }
-  void loadData(){
-     http.post('${Config.API_URL}/user_profile/load').then((res){
-       Map resMap = jsonDecode(res.body) as Map;
-       print(resMap);
-     });
   }
 
-  void logIn() {
+
+  void logIn() async{
     print("hello");
     Map params = Map();
     params['username'] = userName.text;
     params['password'] = passWord.text;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     http.post('${Config.API_URL}/authorize', body: params).then((res) {
+      print(http.post('${Config.API_URL}/authorize', body: params));
       //int loginPass = res.body.length;
       Map resMap = jsonDecode(res.body) as Map;
-      int data = resMap["data"];
-      int loginPass = 0;
-      if(data == 1){
+      print("res:$resMap");
+      sharedPreferences.setString("token", resMap['token']);
+      if(resMap['data'] == 1){
+        print("login success");
         Map resMap = jsonDecode(res.body) as Map;
         SystemInstance systemInstance = SystemInstance();
         systemInstance.userId = resMap["userId"];
@@ -79,9 +77,15 @@ class _Login extends State<Login> {
         systemInstance.passWord = passWord.text;
         userId = systemInstance.userId;
         _fileUtil.writeFile(systemInstance.userId);
+        print("yes");
+        Navigator.push(
+                context, MaterialPageRoute(builder: (context) => First()));
+        showCustomDialogPass(context);
       }else{
-        print('no');
+        showCustomDialog(context);
+        print("login faild");
       }
+
 
       // print(resMap);
       // int data = resMap['data'];
@@ -91,48 +95,48 @@ class _Login extends State<Login> {
 
       // _fileUtil.writeFile(_id);
 
-      if (data == 1) {
-        _hasUser = true;
-        print("yes");
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => First()));
-        Widget okButton = FlatButton(
-          child: Text("ปิด"),
-          onPressed: () => Navigator.of(context).pop(),
-        );
-        AlertDialog alert = AlertDialog(
-          content: Text("สวัสดี ${userName.text}"),
-          actions: [
-            okButton,
-          ],
-        );
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          },
-        );
-      } else {
-        _hasUser = false;
-        print("no");
-
-        Widget okButton = FlatButton(
-          child: Text("ปิด"),
-          onPressed: () => Navigator.of(context).pop(),
-        );
-        AlertDialog alert = AlertDialog(
-          content: Text("ไม่มีชื่อผู้ใช้."),
-          actions: [
-            okButton,
-          ],
-        );
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          },
-        );
-      }
+      // if (data == 1) {
+      //   _hasUser = true;
+      //   print("yes");
+      //   Navigator.push(
+      //       context, MaterialPageRoute(builder: (context) => First()));
+      //   Widget okButton = FlatButton(
+      //     child: Text("ปิด"),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   );
+      //   AlertDialog alert = AlertDialog(
+      //     content: Text("สวัสดี ${userName.text}"),
+      //     actions: [
+      //       okButton,
+      //     ],
+      //   );
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return alert;
+      //     },
+      //   );
+      // } else {
+      //   _hasUser = false;
+      //   print("no");
+      //
+      //   Widget okButton = FlatButton(
+      //     child: Text("ปิด"),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   );
+      //   AlertDialog alert = AlertDialog(
+      //     content: Text("ไม่มีชื่อผู้ใช้."),
+      //     actions: [
+      //       okButton,
+      //     ],
+      //   );
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return alert;
+      //     },
+      //   );
+      // }
       setState(() {});
       print(res.body);
     }).catchError((err) {
@@ -141,6 +145,32 @@ class _Login extends State<Login> {
     });
 //
   }
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ชื่อหรือรหัสผ่านไม่ถูกต้อง'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
+  Future showCustomDialogPass(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ยินดีต้อนรับสู่แอปพลิเคชัน'),
+        actions: [
+          // FlatButton(
+          //   onPressed: () => Navigator.push(
+          //       context, MaterialPageRoute(builder: (context) => First())),
+          //   child: Text('ตกลง'),
+          // )
+        ],
+      )
+  );
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +178,16 @@ class _Login extends State<Login> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('VIRTUAL RUN'),
+          title: Text('Virtual Run'),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue, Colors.cyan],
+                begin: Alignment.bottomRight,
+                end: Alignment.topLeft,
+              ),
+            ),
+          ),
         ),
         body: Padding(
             padding: EdgeInsets.all(10),
@@ -169,15 +208,35 @@ class _Login extends State<Login> {
                     padding: EdgeInsets.all(10),
                     child: Text(
                       'ลงชื่อเข้าใช้',
-                      style: TextStyle(fontSize: 20),
-                    )),
+                      style: TextStyle(
+                          color: Colors.lightBlue,
+                          fontSize: 20),
+
+                    )
+                ),
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 32
+                  ),
+                  child: Center(
+                    child: Image.asset('assets/images/running.png'),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 35, 10, 0),
                   child: TextField(
                     controller: userName,
+
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.cyan
+                        ),
+                      ),
                       labelText: 'ชื่อผู้ใช้',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -189,6 +248,9 @@ class _Login extends State<Login> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'รหัสผ่าน',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -200,28 +262,33 @@ class _Login extends State<Login> {
                       color: Colors.blue,
                       child: Text('เข้าสู่ระบบ'),
                       onPressed: () {
+
                         print(userName.text);
                         print(passWord.text);
+
                         logIn();
                       },
                     )),
                 Container(
                     child: Row(
                       children: <Widget>[
-                        Text('ยังไม่เป็นสมาชิก'),
+                        Text('ยังไม่เป็นสมาชิก',style: TextStyle(color: Colors.blue),),
                         FlatButton(
-                          textColor: Colors.blue,
+                          textColor: Colors.lightBlue,
                           child: Text(
                             'สมัครสมาชิก',
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                                fontSize: 20,
+                            ),
                           ),
                           onPressed: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Register()));
+                                    builder: (context) => SelectScreen()));
                           },
-                        )
+                        ),
                       ],
                       mainAxisAlignment: MainAxisAlignment.center,
                     ))

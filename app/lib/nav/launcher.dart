@@ -1,19 +1,27 @@
+import 'dart:convert';
+
+import 'package:app/config/config.dart';
 import 'package:app/gps/location.dart';
 import 'package:app/gps/stopwatch.dart';
+import 'package:app/system/SystemInstance.dart';
 import 'package:app/ui/ranking.dart';
 import 'package:app/ui/rundata/datafun.dart';
 import 'package:app/ui/runner.dart';
-import 'package:app/ui/setting.dart';
-import 'package:app/ui/tabbar.dart';
-import 'package:app/ui/testpro.dart';
+import 'file:///E:/virtualrun/app/lib/setting/setting.dart';
+import 'file:///E:/virtualrun/app/lib/test/tabbar.dart';
+import 'file:///E:/virtualrun/app/lib/tester/testpro.dart';
+import 'package:app/user/login.dart';
+import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../tracker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../test/tracker.dart';
 import '../ui/profile.dart';
 import '../ui/running.dart';
 import '../ui/tournament.dart';
 import '../ui/report.dart';
-import '../maps.dart';
+import '../test/maps.dart';
+import 'package:http/http.dart' as http;
 
 class Launcher extends StatefulWidget {
   static const routeName = '/';
@@ -26,6 +34,14 @@ class Launcher extends StatefulWidget {
 
 class _LauncherState extends State<Launcher> {
   int _selectedIndex = 0;
+  SystemInstance systemInstance = SystemInstance();
+  SharedPreferences sharedPreferences;
+  FileUtil _fileUtil = FileUtil();
+  var id;
+  var userId;
+  SystemInstance _systemInstance = SystemInstance();
+  var stat;
+
   List<Widget> _pageWidget = <Widget>[
     Tournament(),
     //StopWatch(),
@@ -75,6 +91,28 @@ class _LauncherState extends State<Launcher> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    _fileUtil.readFile().then((id){
+      this.userId = id;
+      print('id ${userId}');
+      systemInstance.token = sharedPreferences.getString("token");
+      systemInstance.userId = userId;
+    });
+    checkToken();
+    super.initState();
+  }
+  checkToken() async{
+    sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.getString("token") == null){
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (BuildContext context) => Login()),
+              (Route<dynamic> route) => false);
+    }
   }
 
   @override

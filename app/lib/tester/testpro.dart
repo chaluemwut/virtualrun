@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:app/config/config.dart';
 import 'package:app/system/SystemInstance.dart';
-import 'package:app/ui/setting.dart';
+import 'file:///E:/virtualrun/app/lib/setting/setting.dart';
 import 'package:app/util/responsive_screen.dart';
 import 'package:app/widget/waveclipperone.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class TestPro extends StatefulWidget {
   @override
@@ -20,6 +23,30 @@ class _TestProState extends State<TestPro> {
   var pickedFile;
   final picker = ImagePicker();
   File _images;
+  SystemInstance _systemInstance = SystemInstance();
+  var id;
+  var name;
+
+
+  Future getData()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/user_profile/show?userId=$id',headers: header );
+    var _data = jsonDecode(data.body);
+    var sum = _data['data'];
+    for(var i in sum){
+      name = i['name'];
+    }
+    print(name);
+    return name;
+  }
+  @override
+  void initState() {
+    SystemInstance systemInstance = SystemInstance();
+    id = systemInstance.userId;
+    getData();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     SystemInstance systemInstance = SystemInstance();

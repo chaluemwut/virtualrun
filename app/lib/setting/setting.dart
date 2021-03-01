@@ -1,7 +1,12 @@
+import 'package:app/data/add.dart';
+import 'package:app/setting/profile/editpass.dart';
+import 'package:app/setting/profile/editprofile.dart';
+import 'package:app/user/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/util/utils.dart';
 import 'package:app/widget/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import 'package:app/system/SystemInstance.dart';
 
@@ -20,12 +25,63 @@ class _SettingState extends State<Setting> {
   bool isPushNotification = true;
   bool isPrivateAccount = true;
   String userName;
+  SharedPreferences sharedPreferences;
+
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Icon(Icons.email),
+        content: Text("siridet.wo@rmuti.ac.th   0934576814"),
+
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      ),
+
+  );
+  Future showCustomDialogAdvice(BuildContext context) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Icon(Icons.edit),
+      content: new Row(
+        children: [
+          new Expanded(
+            child: new TextField(
+              autofocus: true,
+              decoration: new InputDecoration(
+                  labelText: 'ข้อเสนอแนะ',),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        FlatButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('ส่ง'),
+        )
+      ],
+    ),
+
+  );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getSharedPreference();
+    super.initState();
+  }
+  Future getSharedPreference()async{
+    sharedPreferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {
     SystemInstance systemInstance = SystemInstance();
-    userName = systemInstance.userName;
-    _name = userName;
+    // userName = systemInstance.userName;
+    // _name = userName;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -51,7 +107,7 @@ class _SettingState extends State<Setting> {
             child: Column(
               children: <Widget>[
                 accountSection(),
-                pushNotificationSection(),
+                // pushNotificationSection(),
                 getHelpSection(),
               ],
             ),
@@ -74,21 +130,33 @@ class _SettingState extends State<Setting> {
           child: TileRow(
             label: "ติดต่อเรา",
             disableDivider: false,
-            onTap: () {},
+            onTap: () {
+              print("aaa");
+              showCustomDialog(context);
+            },
           ),
         ),
         Container(
           child: TileRow(
             label: "ข้อเสนอแนะ",
             disableDivider: false,
-            onTap: () {},
+            onTap: () {
+              print("aaa");
+              showCustomDialogAdvice(context);
+            },
           ),
         ),
         Container(
           child: TileRow(
             label: "ลงชื่อออก",
             disableDivider: false,
-            onTap: () {},
+            onTap: () {
+              sharedPreferences.clear();
+              sharedPreferences.commit();
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (BuildContext context) => Login()),
+                      (Route<dynamic> route) => false);
+            },
           ),
         )
       ],
@@ -104,21 +172,27 @@ class _SettingState extends State<Setting> {
       disableDivider: false,
       children: <Widget>[
         Container(
-          child: TileRow(
-            label: "ชื่อบัญชี",
-            disabled: true,
-            rowValue: "${_name}",
-            disableDivider: false,
-            onTap: () {},
-          ),
+            child: TileRow(
+              label: "แก้ไขบัญชี",
+              // disabled: true,
+              // rowValue: "${_name}",
+              // disableDivider: true,
+              onTap: () {
+                print("dasd");
+                Navigator.push(context,MaterialPageRoute(builder: (context) => EditScreen()));
+              },
+            ),
         ),
-        Container(
-          child: TileRow(
-            label: "เปลี่ยนรหัส่ผ่าน",
-            disableDivider: false,
-            onTap: () {},
-          ),
-        )
+        // Container(
+        //   child: TileRow(
+        //     label: "เปลี่ยนรหัสผ่าน",
+        //     disableDivider: false,
+        //     onTap: () {
+        //       print("aaa");
+        //       // Navigator.push(context,MaterialPageRoute(builder: (context) => EditPassWordScreen()));
+        //     },
+        //   ),
+        // )
       ],
     );
   }

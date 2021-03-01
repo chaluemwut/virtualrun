@@ -111,7 +111,7 @@ class _ReportState extends State<Report> {
               ),
 
               Padding(
-                padding: const EdgeInsets.fromLTRB(120, 20, 120, 20),
+                padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                 child: Container(
 
                   child: RaisedButton.icon(

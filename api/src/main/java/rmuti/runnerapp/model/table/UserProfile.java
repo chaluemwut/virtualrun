@@ -17,4 +17,10 @@ public class UserProfile {
     private String passWord;
     @Column
     private String au;
+    @Column
+    private String name;
+    @Column
+    private String tel;
+    @Column(name = "img_profile")
+    private String imgProfile;
 }

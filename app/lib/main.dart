@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'file:///E:/virtualrun/app/lib/config/config.dart';
 import 'package:app/system/SystemInstance.dart';
+import 'package:app/ui/tournament.dart';
 // import 'package:app/news.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Google Maps Demo',
       //home: Login(),
-      home: Login(),
+      home: First(),
     );
   }
 }
@@ -46,6 +48,7 @@ class _First extends State {
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         backgroundColor: Colors.black54,
         primaryColor: Colors.pink,
@@ -55,7 +58,6 @@ class _First extends State {
       title: 'First Flutter App',
       initialRoute: '/', // สามารถใช้ home แทนได้
       routes: {
-        // Maps.routename:(context) => Maps(),
         Launcher.routeName: (context) => Launcher(),
       },
     );

@@ -1,12 +1,19 @@
+import 'dart:convert';
+
+import 'package:app/config/config.dart';
 import 'package:app/data/full.dart';
 import 'package:app/data/half.dart';
 import 'package:app/data/mini.dart';
+import 'package:app/system/SystemInstance.dart';
 import 'package:app/tester/testaddtour.dart';
 import 'package:app/tester/testall.dart';
 import 'package:app/tester/testdata.dart';
+import 'package:app/ui/profile.dart';
+import 'package:app/user/login.dart';
 import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/funrun.dart';
 import 'package:app/data/add.dart';
 
@@ -26,29 +33,77 @@ class Tournament extends StatefulWidget {
 class _Tournament extends State<Tournament> {
   FileUtil _fileUtil = FileUtil();
   var userId;
-  int gg;
+  var gg =0;
+  SharedPreferences sharedPreferences;
+  var id;
+  var stat = "";
+
+  SystemInstance systemInstance = SystemInstance();
+  SystemInstance _systemInstance = SystemInstance();
+
+  Future getData()async{
+    print("ididid$id");
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/user_profile/show?userId=$userId',headers: header );
+    var _data = jsonDecode(data.body);
+    print(_data);
+    var sum = _data['data'];
+    for(var i in sum){
+      print(i);
+      ProfileData(
+          i['userId'],
+          i['userName'],
+          i['passWord'],
+          i['au'],
+          i['name'],
+          i['tel'],
+          i['imgProfile']
+      );
+      stat = i['au'];
+    }
+    print(stat);
+    return stat;
+  }
+  void check(){
+    print("gggg$gg");
+    if(gg == 0){
+      gg = userId;
+      print("check");
+      check();
+    }else{
+      print("go");
+      getData();
+    }
+  }
+  Future showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('สำหรับระบบเท่านั้น'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
+
 
   @override
-  void initState(){
+  void initState() {
+    // TODO: implement initState
+    id = systemInstance.userId;
+    print("dasd$id");
     _fileUtil.readFile().then((id){
-      this.userId = id;
-      print('id tournament ${userId}');
+        this.userId = id;
+        print('id tournament ${userId}');
+        getData();
     });
+
+    // check();
+    super.initState();
   }
 
-  List<Widget> _uiList = List();
-
-//  int _id;
-//  Data _data = Data();
-  // List<Data> data = List();
-  // Data _data = new Data();
-  //Future<Data> futureData;
-  // Data geek = new Data();
-  /*@override
-  void initState(){
-    super.initState();
-   // futureData = fetctData();
-  }*/
   @override
   Widget build(BuildContext context) {
     //var g = _data.userId;
@@ -57,7 +112,9 @@ class _Tournament extends State<Tournament> {
     //_data.userId = 5;
     // print(_data.userId);
     //print(_id);
-    gg = userId;
+
+
+    print("gg$gg");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -71,6 +128,17 @@ class _Tournament extends State<Tournament> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.playlist_add),
+              onPressed: (){
+                if(stat == "Admin"){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddTournament()));
+                }else{
+                  showCustomDialog(context);
+                }
+              }),
+        ],
       ),
       body: ListView(
         children: <Widget>[
@@ -214,13 +282,14 @@ class _Tournament extends State<Tournament> {
 
         ],
       ),
-      floatingActionButton:FloatingActionButton(
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddTournament()));
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.red,
-      ),
+
+      // floatingActionButton:FloatingActionButton(
+      //   onPressed: (){
+      //     Navigator.push(context, MaterialPageRoute(builder: (context) => AddTournament()));
+      //   },
+      //   child: Icon(Icons.add),
+      //   backgroundColor: Colors.red,
+      // ),
       // _isAdmin == true ?
       // FloatingActionButton(
       //   onPressed: () {
