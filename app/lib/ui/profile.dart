@@ -81,6 +81,7 @@ class _ProFileState extends State<ProFile> {
       }
       print("sum$sum");
       if(sum == 0){
+        print(0);
         var sstom = sum / 60;
         var ssstom = "0${sstom}0";
         var mmm = ssstom.toString().substring(0, 2);
@@ -92,6 +93,7 @@ class _ProFileState extends State<ProFile> {
         consum = "00:${mmm}:${datas}0";
       }else{
         var sstom = sum / 60;
+        print(sstom);
         var ssstom = "0${sstom}0";
         var mmm = ssstom.toString().substring(0, 2);
         var sss = ssstom.toString().substring(3, 5);
@@ -110,7 +112,7 @@ class _ProFileState extends State<ProFile> {
       len = int.parse(lengthOfData);
       var leng = 1;
       print("les$len");
-      var ava = (sum / leng).toInt();
+      var ava = (sum / len).toInt();
       print("avea$ava");
       if (ava == 0) {
         print("dasd");
@@ -124,8 +126,10 @@ class _ProFileState extends State<ProFile> {
         var dataava = stosava.toStringAsFixed(0);
         sumTime = "00:${mmmava}:${dataava}0";
       }else {
-        var stomava = "0${ava}0";
+        var sstomava = ava / 60;
+        var stomava = "0${sstomava}0";
         print(stomava);
+
         var mmmava = stomava.toString().substring(0, 2);
         var sssava = stomava.toString().substring(3, 5);
         var ssssava = "0.${sssava}";

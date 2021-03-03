@@ -157,7 +157,8 @@ class _RunnerState extends State<Runner> {
                                        var de = ('31/01/2021');
                                        var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
                                        var de2d = new DateFormat('dd/mm/yyyy').parse(de);
-                                       print(ds2d);
+                                       print(s2date);
+                                       print(s2dateN);
                                        if((s2date==s2dateN || s2date.isAfter(s2dateN)) && (s2date==s2dateN || s2date.isBefore(s2dateN))){
                                          print('0');
                                          // Navigator.push(

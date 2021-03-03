@@ -103,7 +103,7 @@ class _FullMarathon extends State{
           FlatButton(
             onPressed: () => {
               removeList(),
-              // Navigator.of(context).pop(),
+              Navigator.of(context).pop(),
             },
             child: Text("ใช่",style: TextStyle(color: Colors.blue),),
           ),
@@ -187,7 +187,7 @@ class _FullMarathon extends State{
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Half Marathon'),
+        title: Text('Marathon'),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

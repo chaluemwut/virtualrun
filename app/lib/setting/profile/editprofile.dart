@@ -93,18 +93,18 @@ class _EditScreenState extends State<EditScreen> {
       }
 
     });
-    dios.post('${Config.API_URL}/ranking/update',data: formDatas).then((res) {
-      Map resMap = jsonDecode(res.toString()) as Map;
-      print("save");
-      var data = resMap['status'];
-      if(data == 1){
-        showCustomDialog(context);
-        setState(() {});
-      }else{
-        CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
-      }
-
-    });
+    // dios.post('${Config.API_URL}/ranking/update',data: formDatas).then((res) {
+    //   Map resMap = jsonDecode(res.toString()) as Map;
+    //   print("save");
+    //   var data = resMap['status'];
+    //   if(data == 1){
+    //     showCustomDialog(context);
+    //     setState(() {});
+    //   }else{
+    //     CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+    //   }
+    //
+    // });
   }
 
   @override
@@ -204,7 +204,7 @@ class _EditScreenState extends State<EditScreen> {
                 child: RaisedButton(
                   textColor: Colors.white,
                   color: Colors.blue,
-                  child: Text('ลงทะเบียน'),
+                  child: Text('บันทึก'),
                   onPressed: () {
                     if(userName.text.isNotEmpty|name.text.isNotEmpty|tel.text.isNotEmpty){
                       onClick();

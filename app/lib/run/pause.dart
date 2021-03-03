@@ -179,7 +179,7 @@ class _PauseState extends State<Pause> {
   void calculate() {
     Map params = Map();
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId', headers: header,body: params).then((res) {
+    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId&dateNow=$date', headers: header,body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
       var data = resMap['data'];
       for (var i in data) {
@@ -271,7 +271,7 @@ class _PauseState extends State<Pause> {
       params['tid'] = _loadData.toString();
       params['userId']= userId.toString();
       params['id'] = allRunId.toString();
-      params['km'] = distanceMessage.toString();
+      params['km'] = theKm.toString();
       params['time'] = consum.toString();
       params['type'] = theType.toString();
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -284,7 +284,7 @@ class _PauseState extends State<Pause> {
       Map params = Map();
       params['userId']= userId.toString();
       params['id'] = allRunId.toString();
-      params['km'] = distanceMessage.toString();
+      params['km'] = theKm.toString();
       params['time'] = theTime.toString();
       params['type'] = theType.toString();
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -302,7 +302,7 @@ class _PauseState extends State<Pause> {
     Map params = Map();
     params['userId'] = userId.toString();
     params['id'] = allRunId.toString();
-    params['km'] = distanceMessage.toString();
+    params['km'] = theKm.toString();
     params['time'] = theTime.toString();
     params['type'] = theType.toString();
     params['dateNow'] = date.toString();
@@ -326,7 +326,7 @@ class _PauseState extends State<Pause> {
       params['userId']= userId.toString();
       params['name'] = name.toString();
       params['nameAll'] = nameAll.toString();
-      params['km'] = distanceMessage.toString();
+      params['km'] = theKm.toString();
       params['time'] = theTime.toString();
       params['type'] = theType.toString();
       params['imgRanking'] = img.toString();
@@ -409,7 +409,7 @@ class _PauseState extends State<Pause> {
                      Row(
                        children: <Widget>[
                          Expanded(
-                           child: Text('${distanceMessage}', textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
+                           child: Text('${theKm}', textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
 
                          ),
                          Expanded(
@@ -488,9 +488,9 @@ class _PauseState extends State<Pause> {
                                  color: Colors.white,
                                  iconSize: 100,
                                  onPressed: () {
-                                   // saveToData();
-                                   // saveInData();
-                                   // saveSuccess();
+                                   saveToData();
+                                   saveInData();
+                                   saveSuccess();
                                    showCustomDialog(context);
                                      // Navigator.pushReplacement(
                                      //     context,

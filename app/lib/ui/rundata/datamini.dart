@@ -126,7 +126,7 @@ class _DataMiniState extends State<DataMini> {
                                 ),
                               ),
                               title: Text(snapshot.data[index].name),
-                              subtitle: Text('จากรายการ ' +snapshot.data[index].nameAll + ' เวลาที่ทำได้ ' + snapshot.data[index].time),
+                              subtitle: Text('จากรายการ ' +snapshot.data[index].nameAll + '\nเวลาที่ทำได้ ' + snapshot.data[index].time),
                               onTap: (){
                                 if(stat == 'Admin'){
                                   print("yes");

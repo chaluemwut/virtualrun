@@ -4,6 +4,7 @@ import 'package:app/config/config.dart';
 import 'package:app/gps/location.dart';
 import 'package:app/gps/stopwatch.dart';
 import 'package:app/system/SystemInstance.dart';
+import 'package:app/ui/news.dart';
 import 'package:app/ui/ranking.dart';
 import 'package:app/ui/rundata/datafun.dart';
 import 'package:app/ui/runner.dart';
@@ -43,6 +44,7 @@ class _LauncherState extends State<Launcher> {
   var stat;
 
   List<Widget> _pageWidget = <Widget>[
+
     Tournament(),
     //StopWatch(),
     //Running(),
@@ -50,14 +52,15 @@ class _LauncherState extends State<Launcher> {
     Runner(),
     //MapSample(),
     //Tracking(),
+    ProFile(),
 
-    Report(),
+    // Report(),
     //TabBarScreen(),
     RankingScreen(),
     // TestRankingScreen(),
     // DataFun(),
     // TestPro(),
-    ProFile(),
+    NewsScreen(),
 
     // Setting(),
 
@@ -66,24 +69,26 @@ class _LauncherState extends State<Launcher> {
   List<BottomNavigationBarItem> _menuBar
   = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.newspaper),
+      icon: Icon(FontAwesomeIcons.list),
       title: Text('รายการวิ่ง'),
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.running),
       title: Text('วิ่ง'),
     ),
+
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.flagCheckered),
-      title: Text('ส่งรายงาน'),
+      icon: Icon(FontAwesomeIcons.userAlt),
+      title: Text('บัญชีของฉัน'),
     ),
+
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.star),
       title: Text('จัดอันดับ'),
     ),
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.userAlt),
-      title: Text('บัญชีของฉัน'),
+      icon: Icon(FontAwesomeIcons.newspaper),
+      title: Text('ข่าวสาร'),
     ),
   ];
 

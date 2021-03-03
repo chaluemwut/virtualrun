@@ -88,19 +88,19 @@ class _StartState extends State<StartRun> {
         print("data lng ${locationData.longitude} .....");
         _lng = lng;
         _lat = lat;
-        // calculate();
-        // Map params = Map();
-        // print("ccc");
-        // params['lat'] = lat.toString();
-        // params['lng'] = lng.toString();
-        // params['userId'] = myId.toString();
-        // params['id'] = allRunId.toString();
-        // params['dateNow'] = myDate.toString();
-        // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-        // http.post('${Config.API_URL}/save_position/save',headers: header, body: params).then((res) {
-        //   Map resMap = jsonDecode(res.body) as Map;
-        //   print(resMap);
-        // });
+        calculate();
+        Map params = Map();
+        print("ccc");
+        params['lat'] = lat.toString();
+        params['lng'] = lng.toString();
+        params['userId'] = myId.toString();
+        params['id'] = allRunId.toString();
+        params['dateNow'] = myDate.toString();
+        Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+        http.post('${Config.API_URL}/save_position/save',headers: header, body: params).then((res) {
+          Map resMap = jsonDecode(res.body) as Map;
+          print(resMap);
+        });
       }
     });
     super.initState();
@@ -135,7 +135,7 @@ class _StartState extends State<StartRun> {
 
     Map params = Map();
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId', headers: header, body: params).then((res) {
+    http.post('${Config.API_URL}/save_position/show?userId=$myId&id=$allRunId&dateNow=$myDate', headers: header, body: params).then((res) {
       Map resMap = jsonDecode(res.body) as Map;
       var data = resMap['data'];
       List _listSum = List();
@@ -288,6 +288,7 @@ class _StartState extends State<StartRun> {
                           iconSize: 100,
                           onPressed: () {
                             startstopwatch();
+                            locationSubscription.resume();
 
                             // Navigator.push(
                             //     context,
@@ -313,7 +314,7 @@ class _StartState extends State<StartRun> {
                           iconSize: 100,
                           onPressed: () {
                             stopstopwatch();
-                            locationSubscription.cancel();
+                            locationSubscription.pause();
                             print("type:${theType}");
                             Navigator.push(
                                 context,

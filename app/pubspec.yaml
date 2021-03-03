@@ -58,9 +58,20 @@ dependencies:
 
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.7.0"
+  flutter_launcher_name: "^0.0.1"
   flutter_test:
     sdk: flutter
 
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icon.png"
+
+
+flutter_launcher_name:
+  name: "VirtualRun"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -92,6 +103,32 @@ flutter:
      - assets/images/loading.gif
      - assets/images/running.png
      - assets/images/runner.png
+     - assets/images/icon.png
+     - assets/images/callcenter.png
+     - assets/images/user.png
+     - assets/images/event.png
+     - assets/images/howtouser.jpg
+     - assets/images/howuser1.jpg
+     - assets/images/howuser2.jpg
+     - assets/images/howuser3.jpg
+     - assets/images/howrun1.jpg
+     - assets/images/howrun2.jpg
+     - assets/images/howrun3.jpg
+     - assets/images/howrun4.jpg
+     - assets/images/howrun5.jpg
+     - assets/images/howrun6.jpg
+     - assets/images/howedit1.jpg
+     - assets/images/howedit2.jpg
+     - assets/images/howedit3.jpg
+     - assets/images/howedit4.jpg
+     - assets/images/howevent.png
+     - assets/images/howadd1.png
+     - assets/images/howadd2.png
+     - assets/images/howadd3.png
+     - assets/images/howdelete1.jpg
+     - assets/images/howdelete2.png
+     - assets/images/howsee1.jpg
+     - assets/images/howsee2.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
