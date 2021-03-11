@@ -39,6 +39,9 @@ class _ProFileState extends State<ProFile> {
   var d = 0;
   var sumTime = "";
   var len;
+  var durate = "";
+
+  var dd = Duration(hours: 0,minutes: 0,seconds: 0);
 
   Future getdata()async {Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/total_data/show_data?userId=$id', headers: header);
@@ -52,6 +55,11 @@ class _ProFileState extends State<ProFile> {
         _listKm.add(i['km']);
         _listTime.add(i['time']);
       }
+
+      var t = Duration(hours: 0,minutes: 50,seconds: 0);
+      var a = Duration(minutes: 5);
+      var tt = t+a;
+      print('tt$tt');
       print("lis$_listKm");
       for (var a in _listKm) {
         print('asd$a');
@@ -64,6 +72,7 @@ class _ProFileState extends State<ProFile> {
       }
       for (var b in _listTime) {
         print(b);
+
         var hh = b.substring(0, 2);
         var mm = b.substring(3, 5);
         var ss = b.substring(6, 8);
@@ -72,72 +81,104 @@ class _ProFileState extends State<ProFile> {
         var m = int.parse(mm);
         var s = int.parse(ss);
 
+        print(h);
+        print(m);
+        print(s);
 
+        var dur = Duration(hours: h,minutes: m,seconds: s);
+        print(dur);
+
+        dd = dd + dur;
+        print(dd);
+        var d = dd.toString();
+        durate = d.substring(0,7);
+        print(durate);
+        // sum = int.parse(dd);
+        // print(sum);
         var htos = h * 60 * 60;
         var mtos = m * 60;
         var total = htos + mtos + s;
 
         sum = sum + total;
       }
-      print("sum$sum");
-      if(sum == 0){
-        print(0);
-        var sstom = sum / 60;
-        var ssstom = "0${sstom}0";
-        var mmm = ssstom.toString().substring(0, 2);
-        var sss = ssstom.toString().substring(3, 5);
-        var ssss = "0.${sss}";
-        var stoi = double.parse(ssss);
-        var stos = stoi * 60;
-        var datas = stos.toStringAsFixed(0);
-        consum = "00:${mmm}:${datas}0";
-      }else{
-        var sstom = sum / 60;
-        print(sstom);
-        var ssstom = "0${sstom}0";
-        var mmm = ssstom.toString().substring(0, 2);
-        var sss = ssstom.toString().substring(3, 5);
-        var ssss = "0.${sss}";
-        var stoi = double.parse(ssss);
-        var stos = stoi * 60;
-        var datas = stos.toStringAsFixed(0);
-        consum = "00:${mmm}:${datas}";
-      }
+      print(sum);
+      // if(sum == 0){
+      //   print(0);
+      //   var sstom = sum / 60;
+      //   var ssstom = "0${sstom}0";
+      //   var mmm = ssstom.toString().substring(0, 2);
+      //   var sss = ssstom.toString().substring(3, 5);
+      //   var ssss = "0.${sss}";
+      //   var stoi = double.parse(ssss);
+      //   var stos = stoi * 60;
+      //   var datas = stos.toStringAsFixed(0);
+      //   consum = "00:${mmm}:${datas}0";
+      // }else{
+      //   var sstom = sum / 60;
+      //   print(sstom);
+      //   //var ssstom = "0${sstom}0";
+      //   var mmm = sstom.toString().substring(0, 2);
+      //   var sss = sstom.toString().substring(3, 5);
+      //   var ssss = "0.${sss}";
+      //   print(sstom);
+      //   print(mmm);
+      //   var stoi = double.parse(ssss);
+      //   var stos = stoi * 60;
+      //   var datas = stos.toStringAsFixed(0);
+      //   consum = "00:${mmm}:${datas}";
+      // }
+      //
+      // print("con$consum");
+      // print("sumK$sumK");
+      // if(sumK == 0.0){
+      //   sumKm = "0.0";
+      // }
 
-      print("con$consum");
-      print("sumK$sumK");
-      if(sumK == 0.0){
-        sumKm = "0.0";
-      }
+
       len = int.parse(lengthOfData);
-      var leng = 1;
+      // var leng = 1;
       print("les$len");
-      var ava = (sum / len).toInt();
-      print("avea$ava");
-      if (ava == 0) {
-        print("dasd");
-        var stomava = "00000";
-        print("dfff$stomava");
-        var mmmava = stomava.toString().substring(0, 2);
-        var sssava = stomava.toString().substring(3, 5);
-        var ssssava = "0.${sssava}";
-        var stoiava = double.parse(ssssava);
-        var stosava = stoiava * 60;
-        var dataava = stosava.toStringAsFixed(0);
-        sumTime = "00:${mmmava}:${dataava}0";
-      }else {
-        var sstomava = ava / 60;
-        var stomava = "0${sstomava}0";
-        print(stomava);
-
-        var mmmava = stomava.toString().substring(0, 2);
-        var sssava = stomava.toString().substring(3, 5);
-        var ssssava = "0.${sssava}";
-        var stoiava = double.parse(ssssava);
-        var stosava = stoiava * 60;
-        var dataava = stosava.toStringAsFixed(0);
-        sumTime = "00:${mmmava}:${dataava}";
-      }
+      var hhh = durate.substring(0,1);
+      var mmm = durate.substring(2,4);
+      var sss = durate.substring(5,7);
+      var hhhh = int.parse(hhh);
+      var mmmm = int.parse(mmm);
+      var ssss = int.parse(sss);
+      var asdd = Duration(hours: hhhh,minutes: mmmm,seconds: ssss);
+      print(asdd.inSeconds);
+      var kkk = asdd.inSeconds / len;
+      print(kkk);
+      var seto = kkk.toInt();
+      var sec = Duration(seconds: seto);
+      print(sec);
+      var seco = sec.toString();
+      sumTime = seco.substring(0,7);
+      // var ava = (sum / len).toInt();
+      // print("avea$ava");
+      // if (ava == 0) {
+      //   print("dasd");
+      //   var stomava = "00000";
+      //   print("dfff$stomava");
+      //   var mmmava = stomava.toString().substring(0, 2);
+      //   var sssava = stomava.toString().substring(3, 5);
+      //   var ssssava = "0.${sssava}";
+      //   var stoiava = double.parse(ssssava);
+      //   var stosava = stoiava * 60;
+      //   var dataava = stosava.toStringAsFixed(0);
+      //   sumTime = "00:${mmmava}:${dataava}0";
+      // }else {
+      //   var sstomava = ava / 60;
+      //   var stomava = "0${sstomava}0";
+      //   print(stomava);
+      //
+      //   var mmmava = sstomava.toString().substring(0, 2);
+      //   var sssava = sstomava.toString().substring(3, 5);
+      //   var ssssava = "0.${sssava}";
+      //   var stoiava = double.parse(ssssava);
+      //   var stosava = stoiava * 60;
+      //   var dataava = stosava.toStringAsFixed(0);
+      //   sumTime = "00:${mmmava}:${dataava}";
+      // }
       setState(() {
         sumKm = sumKm;
         consum = consum;
@@ -319,7 +360,7 @@ class _ProFileState extends State<ProFile> {
                       child: Text('$sumTime', textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ),
                     Expanded(
-                      child: Text('$consum',textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
+                      child: Text('$durate',textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ),
                   ],
                 ),

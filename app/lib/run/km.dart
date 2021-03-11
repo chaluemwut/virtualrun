@@ -174,6 +174,7 @@ class _KilometerScreenState extends State<KilometerScreen> {
                   int aaId = item.id;
                   print("allRunId = $aaId");
                   theKm = item.km;
+                  // var theDis = 10;
                   var theDis = double.parse(distance);
                   var myKm = double.parse(theKm);
                   // myKm = 5;

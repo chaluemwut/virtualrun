@@ -35,7 +35,7 @@ class _PauseState extends State<Pause> {
   var ss;
   var theLat = 16.4464643;
   var theLng = 0.00;
-  var sum = 0;
+  var sum;
   var consum;
   var sumk = 0.0;
   var sumkm;
@@ -67,6 +67,10 @@ class _PauseState extends State<Pause> {
   var img;
   var name;
   var nameAll;
+  var result = 0.0;
+
+  var timer;
+  var dd = Duration(hours: 0,minutes: 0,seconds: 0);
 
 
   @override
@@ -118,10 +122,16 @@ class _PauseState extends State<Pause> {
       var m = int.parse(mm);
       var s = int.parse(ss);
 
+      var dur = Duration(hours: h,minutes: m,seconds: s);
+      print("dur$dur");
+      dd = dd + dur;
+      var d = dd.toString();
+      timer = d.substring(0,7);
+      print('timer$timer');
 
-      var htos = h * 60 * 60;
-      var mtos = m * 60;
-      var total = htos + mtos + s;
+      // var htos = h * 60 * 60;
+      // var mtos = m * 60;
+      // var total = htos + mtos + s;
 
       var hhTheTime = theTime.substring(0,2);
       var mmTheTime = theTime.substring(3, 5);
@@ -131,25 +141,36 @@ class _PauseState extends State<Pause> {
       var mTheTime = int.parse(mmTheTime);
       var sTheTime = int.parse(ssTheTime);
 
-      var htosTheTime = hTheTime * 60 * 60;
-      var mtosTheTime = mTheTime * 60;
-      var totalTheTime = htosTheTime + mtosTheTime + sTheTime;
-      sum = sum + total + totalTheTime;
+      var indur = Duration(hours: hTheTime,minutes: mTheTime,seconds: sTheTime);
+      print("indur$indur");
+
+      // var htosTheTime = hTheTime * 60 * 60;
+      // var mtosTheTime = mTheTime * 60;
+      // var totalTheTime = htosTheTime + mtosTheTime + sTheTime;
+      var insum = dd + indur;
+      var de = insum.toString();
+      var dee = de.substring(0,7);
+      var deee = "0$dee";
+      sum = deee;
+
     }
-    var sstom = sum / 60;
-    var ssstom = "0${sstom}0";
-    var mmm = ssstom.toString().substring(0, 2);
-    var sss = ssstom.toString().substring(3, 5);
-    var ssss = "0.${sss}";
-    var stoi = double.parse(ssss);
-    var stos = stoi * 60;
-    var datas = stos.toStringAsFixed(0);
-    consum = "00:${mmm}:${datas}";
+    print("sum$sum");
+    // var sstom = sum / 60;
+    // var ssstom = "0${sstom}0";
+    // var mmm = ssstom.toString().substring(0, 2);
+    // var sss = ssstom.toString().substring(3, 5);
+    // var ssss = "${sss}";
+    // var stoi = double.parse(ssss);
+    // var stos = stoi * 60;
+    // var datas = stos.toStringAsFixed(0);
+    // consum = "00:${mmm}:${datas}";
 
     for (var i in bbb) {
       var k = double.parse(i);
       var zzz = NumberFormat('#0.0#');
       sumk = sumk + k;
+      print("k$k");
+      print("sumk $sumk");
       sumkm = zzz.format(sumk);
     }
     print(sumkm);
@@ -206,14 +227,14 @@ class _PauseState extends State<Pause> {
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     http.post('${Config.API_URL}/total_data/show?userId=$myId&id=$allRunId',headers: header).then((res){
       Map resMap = jsonDecode(res.body) as Map;
-      print("load:${resMap}");
+      // print("load:${resMap}");
       var data = resMap['data'];
       for(var i in data){
         var _data = i['tid'];
         // load.add(_data);
         _loadData = _data;
       }
-      print(_loadData);
+      // print(_loadData);
     });
     setState(() {
 
@@ -223,14 +244,14 @@ class _PauseState extends State<Pause> {
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/total_data/show?userId=$myId&id=$allRunId',headers: header);
     var _data = jsonDecode(data.body);
-    print("loadD:${_data}");
+    // print("loadD:${_data}");
     for(var i in _data){
       print(i);
       var tid = i['tid'];
       // load.add(tid);
       _loadData = tid;
     }
-    print(_loadData);
+    // print(_loadData);
     return _loadData;
   }
   Future getAll()async{
@@ -242,8 +263,8 @@ class _PauseState extends State<Pause> {
       nameAll = i['nameAll'];
       disAll = double.parse(dis);
     }
-    print("disdis$disAll");
-    print('nameAll$nameAll');
+    // print("disdis$disAll");
+    // print('nameAll$nameAll');
     return disAll;
   }
   Future getImg()async{
@@ -252,18 +273,26 @@ class _PauseState extends State<Pause> {
     var _data = jsonDecode(data.body);
     var sum = _data['data'];
     for(var i in sum){
-      print(i);
+      // print(i);
       img = i['imgProfile'];
       name = i['name'];
     }
-    print(img);
-    print(name);
+    // print(img);
+    // print(name);
     setState(() {
 
     });
   }
 
   void saveToData(){
+    print("sumK$sumkm");
+    print("dis$theKm");
+    var inkm = double.parse(sumkm);
+    var inthe = double.parse(theKm);
+    print("inkm$inkm");
+    print("inthe $inthe");
+    result = inkm + inthe;
+    print("result $result");
     print(_loadData);
     if(_loadData !=null){
       print("notnull:${_loadData}");
@@ -271,8 +300,8 @@ class _PauseState extends State<Pause> {
       params['tid'] = _loadData.toString();
       params['userId']= userId.toString();
       params['id'] = allRunId.toString();
-      params['km'] = theKm.toString();
-      params['time'] = consum.toString();
+      params['km'] = result.toString();
+      params['time'] = sum.toString();
       params['type'] = theType.toString();
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
       http.post('${Config.API_URL}/total_data/update',headers: header,body: params).then((res){
@@ -284,8 +313,8 @@ class _PauseState extends State<Pause> {
       Map params = Map();
       params['userId']= userId.toString();
       params['id'] = allRunId.toString();
-      params['km'] = theKm.toString();
-      params['time'] = theTime.toString();
+      params['km'] = result.toString();
+      params['time'] = sum.toString();
       params['type'] = theType.toString();
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
       http.post('${Config.API_URL}/total_data/update',headers: header,body: params).then((res){
@@ -316,18 +345,19 @@ class _PauseState extends State<Pause> {
     });
   }
   void saveSuccess(){
-    print("distance$distanceMessage");
-    print("disAll$disAll");
-    var dis = double.parse(distanceMessage);
-    print(dis);
-    if(dis >= disAll){
+    // print("distance$distanceMessage");
+    // print("disAll$disAll");
+    print(result);
+    // var dis = double.parse(result);
+    // print(dis);
+    if(result >= disAll){
       print('dis');
       Map params = Map();
       params['userId']= userId.toString();
       params['name'] = name.toString();
       params['nameAll'] = nameAll.toString();
       params['km'] = theKm.toString();
-      params['time'] = theTime.toString();
+      params['time'] = sum.toString();
       params['type'] = theType.toString();
       params['imgRanking'] = img.toString();
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
