@@ -123,6 +123,10 @@ class _AddTournament extends State<AddTournament> {
         _date = picker;
         myDate = ("${_date.day}/${_date.month}/${_date.year}");
       });
+    }else{
+      print("null");
+      DateTime defDate = new DateTime.now();
+      myDate = ("${defDate.day}/${defDate.month}/${defDate.year}");
     }
   }
   Future<Null> _selectEndDate(BuildContext context)async{
@@ -137,6 +141,9 @@ class _AddTournament extends State<AddTournament> {
         _dateTime = picked;
         myEndDate = ("${_dateTime.day}/${_dateTime.month}/${_dateTime.year}");
       });
+    }else{
+      DateTime defEndDate = new DateTime.now();
+      myEndDate = ("${defEndDate.day}/${defEndDate.month}/${defEndDate.year}");
     }
   }
 
@@ -145,6 +152,11 @@ class _AddTournament extends State<AddTournament> {
     // TODO: implement initState
     // defaultImage();
     userId = systemInstance.userId;
+
+    DateTime defDate = new DateTime.now();
+    myDate = ("${defDate.day}/${defDate.month}/${defDate.year}");
+    DateTime defEndDate = new DateTime.now();
+    myEndDate = ("${defEndDate.day}/${defEndDate.month}/${defEndDate.year}");
     super.initState();
   }
 
