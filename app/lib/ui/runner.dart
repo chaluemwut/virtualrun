@@ -71,7 +71,7 @@ class _RunnerState extends State<Runner> {
   Future showCustomDialog(BuildContext context) => showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      content: Text('ไม่ตรงตามเงื่่อนไขที่กำหนด'),
+      content: Text('ไม่ตรงตามเงื่อนไขที่กำหนด'),
       actions: [
         FlatButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -148,6 +148,8 @@ class _RunnerState extends State<Runner> {
                                        dateE = snapshot.data[index].dateEnd;
                                        var conS = new DateFormat('dd/mm/yyyy').parse(dateS);
                                        var conE = new DateFormat('dd/mm/yyyy').parse(dateE);
+                                       print("conS $conS");
+                                       print("conE $conE");
                                        var conN = new DateTime.now();
                                        var date2s = ('${_date.day}/${_date.month}/${_date.year}');
                                        var s2date = new DateFormat('dd/mm/yyyy').parse(date2s);
@@ -157,9 +159,9 @@ class _RunnerState extends State<Runner> {
                                        var de = ('31/01/2021');
                                        var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
                                        var de2d = new DateFormat('dd/mm/yyyy').parse(de);
-                                       print(s2date);
-                                       print(s2dateN);
-                                       if((s2date==s2dateN || s2date.isAfter(s2dateN)) && (s2date==s2dateN || s2date.isBefore(s2dateN))){
+                                       print("s2date $s2date");
+                                       print("s2dateN $s2dateN");
+                                       if((s2date==conS || s2date.isAfter(conS)) && (s2date==conE || s2date.isBefore(conE))){
                                          print('0');
                                          // Navigator.push(
                                          //     context,

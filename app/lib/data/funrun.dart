@@ -92,6 +92,18 @@ class _FunRun extends State {
         ],
       )
   );
+  Future showCustomDialogDeleteSuccess(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ลบสำเร็จ'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
   Future showCustomDialogDelete(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -161,18 +173,20 @@ class _FunRun extends State {
   removeList() async{
     print("remove");
     print(aaid);
+    print(userId);
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    var data = await http.post('${Config.API_URL}/test_all/remove?id=${aaid}',headers: header);
+    var data = await http.post('${Config.API_URL}/test_all/remove?id=${aaid}&userId=${userId}',headers: header);
     print(data);
     var jsonData = json.decode(data.body);
     if(jsonData['status'] == 0){
       print("remove แล้ว");
       Navigator.pop(context);
+      showCustomDialogDeleteSuccess(context);
       setState(() {
 
       });
     }else{
-      CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+      CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ไม่ใช่รายการที่ท่านสร้าง ไม่สามารถลบได้');
     }
   }
 

@@ -35,10 +35,10 @@ class _PauseState extends State<Pause> {
   var ss;
   var theLat = 16.4464643;
   var theLng = 0.00;
-  var sum;
+  var sum = "";
   var consum;
   var sumk = 0.0;
-  var sumkm;
+  var sumkm = "0";
   var disAll = 0.0;
 
   var totalTime;
@@ -67,7 +67,7 @@ class _PauseState extends State<Pause> {
   var img;
   var name;
   var nameAll;
-  var result = 0.0;
+  var result = "0";
 
   var timer;
   var dd = Duration(hours: 0,minutes: 0,seconds: 0);
@@ -89,6 +89,8 @@ class _PauseState extends State<Pause> {
     _getData();
     getAll();
     getImg();
+    getAllName();
+    getName();
     // saveSuccess();
   }
 
@@ -96,7 +98,7 @@ class _PauseState extends State<Pause> {
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/test_data/show?userId=${myId}&id=${allRunId}',headers: header);
     var _data = jsonDecode(data.body);
-    print(_data);
+    print("_data$_data");
     for (var i in _data) {
       DataRunner dataRunner = DataRunner(
         i["did"],
@@ -175,8 +177,7 @@ class _PauseState extends State<Pause> {
     }
     print(sumkm);
     setState(() {
-      sum = sum;
-      sumkm = sumkm;
+
     });
     return _listData;
   }
@@ -251,7 +252,7 @@ class _PauseState extends State<Pause> {
       // load.add(tid);
       _loadData = tid;
     }
-    // print(_loadData);
+    print("_loadData$_loadData");
     return _loadData;
   }
   Future getAll()async{
@@ -260,12 +261,20 @@ class _PauseState extends State<Pause> {
     var _data = jsonDecode(data.body);
     for(var i in _data){
       var dis = i['distance'];
-      nameAll = i['nameAll'];
       disAll = double.parse(dis);
     }
-    // print("disdis$disAll");
-    // print('nameAll$nameAll');
+    print("disdis$disAll");
     return disAll;
+  }
+  Future getAllName()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_all/show_id?id=$allRunId',headers: header);
+    var _data = jsonDecode(data.body);
+    for(var i in _data){
+      nameAll = i['nameAll'];
+    }
+    print('nameAll$nameAll');
+    return nameAll;
   }
   Future getImg()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -273,29 +282,52 @@ class _PauseState extends State<Pause> {
     var _data = jsonDecode(data.body);
     var sum = _data['data'];
     for(var i in sum){
-      // print(i);
+      print(i);
       img = i['imgProfile'];
-      name = i['name'];
     }
-    // print(img);
-    // print(name);
+    print("img$img");
     setState(() {
 
     });
+    return img;
+  }
+  Future getName()async{
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/user_profile/show?userId=$myId',headers: header);
+    var _data = jsonDecode(data.body);
+    var sum = _data['data'];
+    for(var i in sum){
+      print(i);
+      name = i['name'];
+    }
+    print("name$name");
+    setState(() {
+
+    });
+    return name;
   }
 
   void saveToData(){
     print("sumK$sumkm");
     print("dis$theKm");
+    if(sum == ""){
+      print("null");
+      sum = theTime;
+    }else{
+      sum = sum;
+    }
     var inkm = double.parse(sumkm);
     var inthe = double.parse(theKm);
     print("inkm$inkm");
     print("inthe $inthe");
-    result = inkm + inthe;
+    var mk = inkm + inthe;
+    var kk = mk.toStringAsFixed(2);
+    result = kk.toString();
     print("result $result");
     print(_loadData);
     if(_loadData !=null){
       print("notnull:${_loadData}");
+      print("sum$sum");
       Map params = Map();
       params['tid'] = _loadData.toString();
       params['userId']= userId.toString();
@@ -310,6 +342,7 @@ class _PauseState extends State<Pause> {
       });
     }else{
       print("null:${_loadData}");
+      print("sum$sum");
       Map params = Map();
       params['userId']= userId.toString();
       params['id'] = allRunId.toString();
@@ -328,6 +361,7 @@ class _PauseState extends State<Pause> {
     });
   }
   void saveInData(){
+
     Map params = Map();
     params['userId'] = userId.toString();
     params['id'] = allRunId.toString();
@@ -348,15 +382,17 @@ class _PauseState extends State<Pause> {
     // print("distance$distanceMessage");
     // print("disAll$disAll");
     print(result);
+    var res = double.parse(result);
     // var dis = double.parse(result);
     // print(dis);
-    if(result >= disAll){
+    if(res >= disAll){
       print('dis');
+      print("sum$sum");
       Map params = Map();
       params['userId']= userId.toString();
       params['name'] = name.toString();
       params['nameAll'] = nameAll.toString();
-      params['km'] = theKm.toString();
+      params['km'] = result.toString();
       params['time'] = sum.toString();
       params['type'] = theType.toString();
       params['imgRanking'] = img.toString();

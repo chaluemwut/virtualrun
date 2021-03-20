@@ -112,7 +112,7 @@ class _KilometerScreenState extends State<KilometerScreen> {
   Future showCustomDialog(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text('ไม่ตรงตามเงื่่อนไขที่กำหนด'),
+        content: Text('ไม่ตรงตามเงื่อนไขที่กำหนด'),
         actions: [
           FlatButton(
             onPressed: () => Navigator.of(context).pop(),

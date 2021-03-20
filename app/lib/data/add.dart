@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdownfield/dropdownfield.dart';
+import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
 import 'package:app/config/config.dart';
 import 'package:app/system/SystemInstance.dart';
@@ -42,7 +43,8 @@ class _AddTournament extends State<AddTournament> {
   File _f;
   final picker = ImagePicker();
   var pickedFile;
-
+  var userId;
+  SystemInstance systemInstance = SystemInstance();
 
 
   // defaultImage() async {
@@ -78,6 +80,7 @@ class _AddTournament extends State<AddTournament> {
   );
 
   void add() {
+    print(userId);
     Dio dio = Dio();
     Map<String, dynamic> params = Map();
     params['nameAll'] = nameAll.text;
@@ -85,6 +88,7 @@ class _AddTournament extends State<AddTournament> {
     params["type"] = dropdown;
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
+    params["userId"] = userId.toString();
     params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
     FormData formData = FormData.fromMap(params);
     // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -140,6 +144,7 @@ class _AddTournament extends State<AddTournament> {
   void initState() {
     // TODO: implement initState
     // defaultImage();
+    userId = systemInstance.userId;
     super.initState();
   }
 

@@ -39,7 +39,7 @@ class _ProFileState extends State<ProFile> {
   var d = 0;
   var sumTime = "";
   var len;
-  var durate = "";
+  var durate = "0:00:00";
 
   var dd = Duration(hours: 0,minutes: 0,seconds: 0);
 
@@ -54,21 +54,18 @@ class _ProFileState extends State<ProFile> {
       for (var i in _data) {
         _listKm.add(i['km']);
         _listTime.add(i['time']);
-      }
 
-      var t = Duration(hours: 0,minutes: 50,seconds: 0);
-      var a = Duration(minutes: 5);
-      var tt = t+a;
-      print('tt$tt');
-      print("lis$_listKm");
+      }
+      print("listkm : $_listKm");
+      print("listtime : $_listTime");
       for (var a in _listKm) {
         print('asd$a');
         var km = double.parse(a);
         print('km${km}');
-        // var zzz = NumberFormat('#0.0#');
+        // var zzz = NumberFormat('#00.00#');
         sumK = sumK + km;
         // sumKm = zzz.format(sumK.toString());
-        sumKm = sumK.toString();
+        sumKm = sumK.toStringAsFixed(2);
       }
       for (var b in _listTime) {
         print(b);
@@ -92,16 +89,16 @@ class _ProFileState extends State<ProFile> {
         print(dd);
         var d = dd.toString();
         durate = d.substring(0,7);
-        print(durate);
+        print('durate: $durate');
         // sum = int.parse(dd);
         // print(sum);
-        var htos = h * 60 * 60;
-        var mtos = m * 60;
-        var total = htos + mtos + s;
-
-        sum = sum + total;
+        // var htos = h * 60 * 60;
+        // var mtos = m * 60;
+        // var total = htos + mtos + s;
+        //
+        // sum = sum + total;
       }
-      print(sum);
+      print("sum: $sum");
       // if(sum == 0){
       //   print(0);
       //   var sstom = sum / 60;
@@ -138,6 +135,10 @@ class _ProFileState extends State<ProFile> {
       len = int.parse(lengthOfData);
       // var leng = 1;
       print("les$len");
+      if(len == 0){
+        len = 1;
+        sumKm = "0.0";
+      }
       var hhh = durate.substring(0,1);
       var mmm = durate.substring(2,4);
       var sss = durate.substring(5,7);
@@ -145,9 +146,9 @@ class _ProFileState extends State<ProFile> {
       var mmmm = int.parse(mmm);
       var ssss = int.parse(sss);
       var asdd = Duration(hours: hhhh,minutes: mmmm,seconds: ssss);
-      print(asdd.inSeconds);
+      print("sdfdf${asdd.inSeconds}");
       var kkk = asdd.inSeconds / len;
-      print(kkk);
+      print("kkk : $kkk");
       var seto = kkk.toInt();
       var sec = Duration(seconds: seto);
       print(sec);
