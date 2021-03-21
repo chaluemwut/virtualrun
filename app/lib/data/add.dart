@@ -45,6 +45,7 @@ class _AddTournament extends State<AddTournament> {
   var pickedFile;
   var userId;
   SystemInstance systemInstance = SystemInstance();
+  String kmDrop = '';
 
 
   // defaultImage() async {
@@ -84,7 +85,7 @@ class _AddTournament extends State<AddTournament> {
     Dio dio = Dio();
     Map<String, dynamic> params = Map();
     params['nameAll'] = nameAll.text;
-    params["distance"] = km.text;
+    params["distance"] = kmDrop;
     params["type"] = dropdown;
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
@@ -101,6 +102,7 @@ class _AddTournament extends State<AddTournament> {
       // _fileUtil.writeFile(systemInstance.aid);
       var data = resMap['status'];
       if(data == 1){
+        Navigator.pop(context);
         showCustomDialog(context);
         setState(() {});
       }else{
@@ -207,17 +209,33 @@ class _AddTournament extends State<AddTournament> {
                     },
                   ),
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 10),
                 Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                    controller: km,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'ระยะทาง',
-                    ),
+                  child: Column(
+                    children: [
+                      if(dropdown == 'Fun Run')...[
+                        funWidget(),
+                      ]else if(dropdown == 'Mini')...[
+                        miWidget(),
+                      ]else if(dropdown == 'Half')...[
+                        halfWidget(),
+                      ]else...[
+                        fullWidget(),
+                      ]
+                    ],
                   ),
                 ),
+                SizedBox(height: 24),
+                // Container(
+                //   padding: EdgeInsets.all(10),
+                //   child: TextField(
+                //     controller: km,
+                //     decoration: InputDecoration(
+                //       border: OutlineInputBorder(),
+                //       labelText: 'ระยะทาง',
+                //     ),
+                //   ),
+                // ),
                 // Container(
                 //   padding: EdgeInsets.all(10),
                 //   child: TextField(
@@ -294,7 +312,7 @@ class _AddTournament extends State<AddTournament> {
                       color: Colors.blue,
                       child: Text('เพิ่ม'),
                       onPressed: () {
-                        if(nameAll.text.isNotEmpty|dropdown.isNotEmpty|km.text.isNotEmpty|myDate.isNotEmpty|myEndDate.isNotEmpty){
+                        if(nameAll.text.isNotEmpty|dropdown.isNotEmpty|kmDrop.isNotEmpty|myDate.isNotEmpty|myEndDate.isNotEmpty){
                           add();
                         }else{
                           CoolAlert.show(context: context, type: CoolAlertType.warning, text: 'กรุณากรอกข้อมูลให้ครบถ้วน');
@@ -309,6 +327,91 @@ class _AddTournament extends State<AddTournament> {
         )
     );
   }
+
+  Align funWidget(){
+    return Align(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        child: DropDownField(
+            controller: disFun,
+            hintText: "เลือกระยะทาง",
+            enabled: true,
+            itemsVisibleInDropdown: 3,
+            items: fun,
+            textStyle: TextStyle(color: Colors.black),
+            onValueChanged: (value){
+              setState(() {
+                kmDrop = value;
+              });
+            }
+        ),
+      ),
+    );
+  }
+
+  Align miWidget(){
+    return Align(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        child: DropDownField(
+            controller: disMi,
+            hintText: "เลือกระยะทาง",
+            enabled: true,
+            itemsVisibleInDropdown: 3,
+            items: mi,
+            textStyle: TextStyle(color: Colors.black),
+            onValueChanged: (value){
+              setState(() {
+                kmDrop = value;
+              });
+            }
+        ),
+      ),
+    );
+  }
+
+  Align halfWidget(){
+    return Align(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        child: DropDownField(
+            controller: disHalf,
+            hintText: "เลือกระยะทาง",
+            enabled: true,
+            itemsVisibleInDropdown: 3,
+            items: half,
+            textStyle: TextStyle(color: Colors.black),
+            onValueChanged: (value){
+              setState(() {
+                kmDrop = value;
+              });
+            }
+        ),
+      ),
+    );
+  }
+
+  Align fullWidget(){
+    return Align(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        child: DropDownField(
+            controller: disFull,
+            hintText: "เลือกระยะทาง",
+            enabled: true,
+            itemsVisibleInDropdown: 3,
+            items: full,
+            textStyle: TextStyle(color: Colors.black),
+            onValueChanged: (value){
+              setState(() {
+                kmDrop = value;
+              });
+            }
+        ),
+      ),
+    );
+  }
+
 }
 String select = '';
 final typeRunSelect = TextEditingController();
@@ -318,4 +421,33 @@ List<String> typeRun = [
   "Mini",
   "Half",
   "Full",
+];
+
+String myFun = '';
+final disFun = TextEditingController();
+List<String> fun = [
+  "3",
+  "4",
+  "5"
+];
+
+String myMi = '';
+final disMi = TextEditingController();
+List<String> mi = [
+  "10",
+  "11",
+];
+
+String myHalf = '';
+final disHalf = TextEditingController();
+List<String> half = [
+  "20",
+  "21",
+];
+
+String myFull = '';
+final disFull = TextEditingController();
+List<String> full = [
+  "40",
+  "42",
 ];

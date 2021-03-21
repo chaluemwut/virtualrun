@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:loading/loading.dart';
 import '../config/config.dart';
+import 'editdata.dart';
 import 'funrun.dart';
 import 'package:app/data/regis/registerrun.dart';
 
@@ -76,6 +77,20 @@ class _Half extends State{
         ],
       )
   );
+  Future showCustomDialogEditFailed(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ไม่สามารถแก้ไขได้'),
+        actions: [
+          FlatButton(
+            onPressed: () => {
+              Navigator.of(context).pop(),
+            },
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
   Future showCustomDialogNot(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -88,10 +103,11 @@ class _Half extends State{
         ],
       )
   );
-  Future showCustomDialogDelete(BuildContext context) => showDialog(
+
+  Future showCustomDialogEdit(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text('ต้องการรายการลบหรือไม่'),
+        content: Text('ต้องการแก้ไขรายการนี้หรือไม่'),
         actions: [
           FlatButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -100,7 +116,28 @@ class _Half extends State{
           ),
           FlatButton(
             onPressed: () => {
-              removeList(),
+              Navigator.of(context).pop(),
+              checkList(),
+              //
+            },
+            child: Text("ใช่",style: TextStyle(color: Colors.blue),),
+          ),
+        ],
+      )
+  );
+  Future showCustomDialogRegis(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ต้องการสมัครรายการนี้หรือไม่'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+
+            child: Text('ไม่',style: TextStyle(color: Colors.red),),
+          ),
+          FlatButton(
+            onPressed: () => {
+              saveData(),
               Navigator.of(context).pop(),
             },
             child: Text("ใช่",style: TextStyle(color: Colors.blue),),
@@ -108,6 +145,27 @@ class _Half extends State{
         ],
       )
   );
+  Future checkList()async{
+    print(aaid);
+    var user;
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_all/show_id?id=$aaid',headers: header );
+    var _data = jsonDecode(data.body);
+    print(_data);
+    for(var i in _data){
+      user = i['userId'];
+    }
+    print(user);
+    print(userId);
+    if(userId == user){
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  EditDataScreen(aaid: aaid,)));
+    }else{
+      showCustomDialogEditFailed(context);
+    }
+  }
   void saveData(){
     print(aaid);
     Map params = Map();
@@ -151,23 +209,7 @@ class _Half extends State{
     print(stat);
     return stat;
   }
-  removeList() async{
-    print("remove");
-    print(aaid);
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    var data = await http.post('${Config.API_URL}/test_all/remove?id=${aaid}',headers: header);
-    print(data);
-    var jsonData = json.decode(data.body);
-    if(jsonData['status'] == 0){
-      print("remove แล้ว");
-      Navigator.pop(context);
-      setState(() {
 
-      });
-    }else{
-      CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
-    }
-  }
   @override
   void initState() {
     _fileUtil.readFile().then((id){
@@ -246,10 +288,9 @@ class _Half extends State{
                             aaid = snapshot.data[index].id;
                             print(aaid);
                             if(stat == "Admin"){
-                              showCustomDialogDelete(context);
+                              showCustomDialogEdit(context);
                             }else{
-                              saveData();
-                              Navigator.of(context).pop();
+                              showCustomDialogRegis(context);
                             }
                           },
                         ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/data/editdata.dart';
 import 'package:app/system/SystemInstance.dart';
 import 'package:app/tester/testall.dart';
 import 'package:app/ui/profile.dart';
@@ -79,6 +80,20 @@ class _FunRun extends State {
         ],
       )
   );
+  Future showCustomDialogEditFailed(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ไม่สามารถแก้ไขได้'),
+        actions: [
+          FlatButton(
+            onPressed: () => {
+              Navigator.of(context).pop(),
+            },
+            child: Text('ปิด'),
+          )
+        ],
+      )
+  );
 
   Future showCustomDialogNot(BuildContext context) => showDialog(
       context: context,
@@ -92,22 +107,13 @@ class _FunRun extends State {
         ],
       )
   );
-  Future showCustomDialogDeleteSuccess(BuildContext context) => showDialog(
+
+
+
+  Future showCustomDialogEdit(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text('ลบสำเร็จ'),
-        actions: [
-          FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('ปิด'),
-          )
-        ],
-      )
-  );
-  Future showCustomDialogDelete(BuildContext context) => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text('ต้องการรายการลบหรือไม่'),
+        content: Text('ต้องการแก้ไขรายการนี้หรือไม่'),
         actions: [
           FlatButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -116,7 +122,28 @@ class _FunRun extends State {
           ),
           FlatButton(
             onPressed: () => {
-              removeList(),
+              Navigator.of(context).pop(),
+              checkList(),
+              //
+            },
+            child: Text("ใช่",style: TextStyle(color: Colors.blue),),
+          ),
+        ],
+      )
+  );
+  Future showCustomDialogRegis(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('ต้องการสมัครรายการนี้หรือไม่'),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+
+            child: Text('ไม่',style: TextStyle(color: Colors.red),),
+          ),
+          FlatButton(
+            onPressed: () => {
+              saveData(),
               Navigator.of(context).pop(),
             },
             child: Text("ใช่",style: TextStyle(color: Colors.blue),),
@@ -124,6 +151,29 @@ class _FunRun extends State {
         ],
       )
   );
+
+  Future checkList()async{
+    print(aaid);
+    var user;
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_all/show_id?id=$aaid',headers: header );
+    var _data = jsonDecode(data.body);
+    print(_data);
+    for(var i in _data){
+      user = i['userId'];
+    }
+    print(user);
+    print(userId);
+    if(userId == user){
+      Navigator.push(context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    EditDataScreen(aaid: aaid,)));
+    }else{
+      showCustomDialogEditFailed(context);
+    }
+  }
+
   void saveData(){
     print(aaid);
     Map params = Map();
@@ -151,10 +201,10 @@ class _FunRun extends State {
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/user_profile/show?userId=$userId',headers: header );
     var _data = jsonDecode(data.body);
-    print(_data);
+    // print(_data);
     var sum = _data['data'];
     for(var i in sum){
-      print(i);
+      // print(i);
       ProfileData(
           i['userId'],
           i['userName'],
@@ -170,25 +220,7 @@ class _FunRun extends State {
     return stat;
   }
 
-  removeList() async{
-    print("remove");
-    print(aaid);
-    print(userId);
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    var data = await http.post('${Config.API_URL}/test_all/remove?id=${aaid}&userId=${userId}',headers: header);
-    print(data);
-    var jsonData = json.decode(data.body);
-    if(jsonData['status'] == 0){
-      print("remove แล้ว");
-      Navigator.pop(context);
-      showCustomDialogDeleteSuccess(context);
-      setState(() {
 
-      });
-    }else{
-      CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ไม่ใช่รายการที่ท่านสร้าง ไม่สามารถลบได้');
-    }
-  }
 
   @override
   void initState() {
@@ -277,9 +309,9 @@ class _FunRun extends State {
                                 aaid = snapshot.data[index].id;
                                 print(aaid);
                                 if(stat == "Admin"){
-                                  showCustomDialogDelete(context);
+                                  showCustomDialogEdit(context);
                                 }else{
-                                  saveData();
+                                  showCustomDialogRegis(context);
                                   // Navigator.of(context).pop();
                                 }
                                 // Navigator.push(context,
