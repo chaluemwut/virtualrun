@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import rmuti.runnerapp.config.Config;
 import rmuti.runnerapp.model.service.UserProfileRepository;
 import rmuti.runnerapp.model.table.UserProfile;
 import rmuti.runnerapp.util.EncoderUtil;
@@ -93,7 +94,7 @@ public class UserProfileController {
             if(fileImg != null){
                 char a = (char) (random.nextInt(26)+'a');
                 userProfile.setImgProfile(String.valueOf(a)+".png");
-                File fileToSave = new File("E://virtualrun//imgdata//profile//"+userProfile.getImgProfile());
+                File fileToSave = new File(Config.imgPro+userProfile.getImgProfile());
                 fileImg.transferTo(fileToSave);
                 userProfile = userProfileRepository.save(userProfile);
                 res.setData(userProfile);
@@ -113,7 +114,7 @@ public class UserProfileController {
         try{
             if(fileImg != null){
                 Optional<UserProfile> userProfileDb = userProfileRepository.findById(userProfile.getUserId());
-                File fileToDelete = new File("E://virtualrun//imgdata//profile//" + userProfileDb.get().getImgProfile());
+                File fileToDelete = new File(Config.imgPro+userProfileDb.get().getImgProfile());
                 if(fileToDelete.delete())
                 {
                     System.out.println("File deleted successfully");
@@ -124,7 +125,7 @@ public class UserProfileController {
                 }
                 char a = (char) (random.nextInt(26)+'a');
                 userProfile.setImgProfile(String.valueOf(a)+".png");
-                File fileToSave = new File("E://virtualrun//imgdata//profile//"+userProfile.getImgProfile());
+                File fileToSave = new File(Config.imgPro+userProfile.getImgProfile());
                 fileImg.transferTo(fileToSave);
                 userProfile = userProfileRepository.save(userProfile);
                 res.setData(userProfile);
@@ -145,7 +146,7 @@ public class UserProfileController {
     @RequestMapping(value = "/image", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] getResource (@RequestParam String imgProfile) throws Exception{
         try {
-            InputStream in = new FileInputStream("E://virtualrun//imgdata//profile//"+imgProfile);
+            InputStream in = new FileInputStream(Config.imgPro+imgProfile);
             var inImg =  IOUtils.toByteArray(in);
             in.close();
             return inImg;
