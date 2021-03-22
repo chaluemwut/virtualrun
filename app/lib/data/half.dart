@@ -28,6 +28,12 @@ class _Half extends State{
   var aaid;
   FileUtil _fileUtil = FileUtil();
   var stat = "";
+  var nameAll;
+  var dis;
+  var type;
+  var dates;
+  var datee;
+  var img;
 
   Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -161,7 +167,7 @@ class _Half extends State{
       Navigator.push(context,
           MaterialPageRoute(
               builder: (BuildContext context) =>
-                  EditDataScreen(aaid: aaid,)));
+                  EditDataScreen(aaid: aaid,name: nameAll,km: dis,type: type,dateE: datee,dateS: dates,img: img,)));
     }else{
       showCustomDialogEditFailed(context);
     }
@@ -207,7 +213,54 @@ class _Half extends State{
       stat = i['au'];
     }
     print(stat);
+    showList();
     return stat;
+  }
+  Future showList()async{
+    print("stat :$stat");
+    if(stat == "Admin"){
+      print("admin");
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      var data = await http.post('${Config.API_URL}/test_all/show_list?type=Half&userId=$userId',headers: header );
+      var _data = jsonDecode(data.body);
+      print(_data);
+      for(var i in _data){
+        Run run = Run(
+          i["id"],
+          i["nameAll"],
+          i["distance"],
+          i["type"],
+          i["dateStart"],
+          i["dateEnd"],
+          i["imgAll"],
+        );
+        runs.add(run);
+      }
+    }else if(stat == 'User'){
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      var data = await http.post('${Config.API_URL}/test_all/show?type=Half',headers: header );
+      var _data = jsonDecode(data.body);
+      print(_data);
+      for(var i in _data){
+        Run run = Run(
+          i["id"],
+          i["nameAll"],
+          i["distance"],
+          i["type"],
+          i["dateStart"],
+          i["dateEnd"],
+          i["imgAll"],
+        );
+        runs.add(run);
+      }
+    }else{
+
+    }
+    print(runs);
+    setState(() {
+
+    });
+    return runs;
   }
 
   @override
@@ -216,6 +269,10 @@ class _Half extends State{
       this.userId = id;
       print('id funrun ${userId}');
       getMyData();
+      showList();
+      setState(() {
+
+      });
     });
     super.initState();
   }
@@ -250,55 +307,70 @@ class _Half extends State{
         // ],
       ),
       body: Container(
-        child: FutureBuilder(
-            future: _getData(),
-            builder: (BuildContext context,AsyncSnapshot snapshot) {
-              if (snapshot.data == null) {
-                return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(0),
-                    child: Loading(
-                      indicator: BallPulseIndicator(),
-                      size: 100.0,color: Colors.pink,
-                    ),
-                  ),
-                );
-              } else {
-                return ListView.builder(
-                  // itemBuilder: getItem ,
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: ListTile(
-                          leading: Container(
-                            height: 50.0,
-                            width: 50.0,
-                            child: FadeInImage(
-                              placeholder: AssetImage('assets/images/loading.gif'),
-                              image: NetworkImage(
-                                '${Config.API_URL}/test_all/image?imgAll=${snapshot.data[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
-                              ),
-                              fit: BoxFit.cover,
+        child: runs.isEmpty ? Center(
+          child: Padding(
+            padding: EdgeInsets.all(0),
+            child: Loading(
+              indicator: BallPulseIndicator(),
+              size: 100.0,
+              color: Colors.pink,
+            ),
+          ),
+        ): ListView.builder(
+            itemCount: runs.length,
+            itemBuilder: (BuildContext context, int index){
+              print('data');
+              return Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                child: InkWell(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Container(
+                          height: 50.0,
+                          width: 50.0,
+                          child: FadeInImage(
+                            placeholder: AssetImage('assets/images/loading.gif'),
+                            image: NetworkImage(
+                              '${Config.API_URL}/test_all/image?imgAll=${runs[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
                             ),
+                            fit: BoxFit.cover,
                           ),
-                          title: Text("รายการ "+snapshot.data[index].nameAll +" ระยะทาง "+ snapshot.data[index].distance),
-                          subtitle: Text(' จากวันที่ ' + snapshot.data[index].dateStart + ' ถึงวันที่ '
-                              + snapshot.data[index].dateEnd),
-                          onTap: () {
-                            aaid = snapshot.data[index].id;
-                            print(aaid);
-                            if(stat == "Admin"){
-                              showCustomDialogEdit(context);
-                            }else{
-                              showCustomDialogRegis(context);
-                            }
-                          },
                         ),
-                      );
-                    }
+                        title: Text("รายการ "+runs[index].nameAll +" ระยะทาง "+ runs[index].distance),
+                        subtitle: Text(' จากวันที่ ' + runs[index].dateStart + ' ถึงวันที่ '
+                            + runs[index].dateEnd),
+                        onTap: () {
+                          aaid = runs[index].id;
+                          nameAll = runs[index].nameAll;
+                          dis = runs[index].distance;
+                          type = runs[index].type;
+                          dates = runs[index].dateStart;
+                          datee = runs[index].dateEnd;
+                          img = runs[index].imgAll;
+                          print(aaid);
+                          print(nameAll);
+                          print(dis);
+                          print(type);
+                          print(dates);
+                          print(datee);
+                          if(stat == "Admin"){
+                            checkList();
+                          }else{
+                            showCustomDialogRegis(context);
+                            // Navigator.of(context).pop();
+                          }
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(
+                          //         builder: (BuildContext context) =>
+                          //             RegisterRun(aaid: aaid,)));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
 
-                );
-              }
+              );
             }
         ),
       ),

@@ -37,7 +37,7 @@ class _AddTournament extends State<AddTournament> {
   TextEditingController nameAll = TextEditingController();
   TextEditingController km = TextEditingController();
   TextEditingController time = TextEditingController();
-  String dropdown = 'Fun Run';
+  String dropdown = '';
   SystemInstance _systemInstance = SystemInstance();
   File _image;
   File _f;
@@ -219,8 +219,10 @@ class _AddTournament extends State<AddTournament> {
                         miWidget(),
                       ]else if(dropdown == 'Half')...[
                         halfWidget(),
-                      ]else...[
+                      ]else if(dropdown == 'Full')...[
                         fullWidget(),
+                      ]else...[
+
                       ]
                     ],
                   ),
@@ -312,10 +314,18 @@ class _AddTournament extends State<AddTournament> {
                       color: Colors.blue,
                       child: Text('เพิ่ม'),
                       onPressed: () {
-                        if(nameAll.text.isNotEmpty|dropdown.isNotEmpty|kmDrop.isNotEmpty|myDate.isNotEmpty|myEndDate.isNotEmpty){
+                        if(nameAll.text.isNotEmpty && dropdown != '' && kmDrop != ''){
+                          print("nameAll $nameAll");
+                          print("dropdown $dropdown");
+                          print("kmDrop $kmDrop");
+
                           add();
                         }else{
-                          CoolAlert.show(context: context, type: CoolAlertType.warning, text: 'กรุณากรอกข้อมูลให้ครบถ้วน');
+                          CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.warning,
+                              text: 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                          );
                         }
 
                       },

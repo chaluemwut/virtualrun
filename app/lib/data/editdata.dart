@@ -213,6 +213,12 @@ class _EditDataScreenState extends State<EditDataScreen> {
     myDate = widget.dateS;
     myEndDate = widget.dateE;
     imgAll = widget.img;
+    print(myName);
+    print(kmDrop);
+    print(dropdown);
+    print(myDate);
+    print(myEndDate);
+    print(imgAll);
     super.initState();
   }
 
@@ -248,11 +254,15 @@ class _EditDataScreenState extends State<EditDataScreen> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(10),
+                    child: Text('ชื่อรายการวิ่ง',style: TextStyle(color: Colors.black),),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: nameAll,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'ชื่อรายการวิ่ง',
+                      // labelText: 'ชื่อรายการวิ่ง',
                       hintText: "$myName"
                     ),
                   ),
