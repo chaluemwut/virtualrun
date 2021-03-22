@@ -13,8 +13,15 @@ import 'package:http/http.dart' as http;
 
 class EditDataScreen extends StatefulWidget {
   final int aaid;
+  final String name;
+  final String type;
+  final String km;
+  final String dateS;
+  final String dateE;
+  final String img;
 
-  const EditDataScreen({Key key, this.aaid}) : super(key: key);
+  const EditDataScreen({Key key, this.aaid, this.name, this.type, this.km, this.dateS, this.dateE,this.img}) : super(key: key);
+
 
   @override
   _EditDataScreenState createState() => _EditDataScreenState();
@@ -39,6 +46,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
   SystemInstance systemInstance = SystemInstance();
   var aid;
   var kmDrop = '';
+  var myName;
+  var imgAll;
 
   Future<Null> _selectDate(BuildContext context) async{
     final DateTime picker = await showDatePicker(
@@ -81,6 +90,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+
       }
     });
   }
@@ -158,7 +168,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
     Map<String, dynamic> params = Map();
     params['id'] = aid;
     params['nameAll'] = nameAll.text;
-    params["distance"] = km.text;
+    params["distance"] = kmDrop;
     params["type"] = dropdown;
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
@@ -190,12 +200,19 @@ class _EditDataScreenState extends State<EditDataScreen> {
   void initState() {
     // TODO: implement initState
     userId = systemInstance.userId;
+    //
+    // DateTime defDate = new DateTime.now();
+    // myDate = ("${defDate.day}/${defDate.month}/${defDate.year}");
+    // DateTime defEndDate = new DateTime.now();
+    // myEndDate = ("${defEndDate.day}/${defEndDate.month}/${defEndDate.year}");
+    // nameAll = widget.name as TextEditingController;
+    myName = widget.name;
 
-    DateTime defDate = new DateTime.now();
-    myDate = ("${defDate.day}/${defDate.month}/${defDate.year}");
-    DateTime defEndDate = new DateTime.now();
-    myEndDate = ("${defEndDate.day}/${defEndDate.month}/${defEndDate.year}");
-
+    kmDrop = widget.km;
+    dropdown = widget.type;
+    myDate = widget.dateS;
+    myEndDate = widget.dateE;
+    imgAll = widget.img;
     super.initState();
   }
 
@@ -236,6 +253,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'ชื่อรายการวิ่ง',
+                      hintText: "$myName"
                     ),
                   ),
                 ),
@@ -243,7 +261,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                   padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
                   child: DropDownField(
                     controller: typeRunSelect,
-                    hintText: "เลือกรายการที่เปิดรับสมัคร",
+                    hintText: "$dropdown",
                     enabled: true,
                     itemsVisibleInDropdown: 5,
                     items: typeRun,
@@ -330,12 +348,12 @@ class _EditDataScreenState extends State<EditDataScreen> {
                   padding: const EdgeInsets.only(top: 30),
                   child: Center(
                     child: _image == null ? Container(
-                      child: Center(
-                        child: Text('เลือกรูปภาพ'),
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/images/loading.gif'),
+                        image: NetworkImage(
+                          '${Config.API_URL}/test_all/image?imgAll=${imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                        ),
                       ),
-                      color: Colors.grey[200],
-                      width: 250.0,
-                      height: 250.0,
                     ):Image.file(_image),
                   ),
                 ),
@@ -381,7 +399,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
         child: DropDownField(
             controller: disFun,
-            hintText: "เลือกระยะทาง",
+            hintText: "$kmDrop",
             enabled: true,
             itemsVisibleInDropdown: 3,
             items: fun,
@@ -402,7 +420,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
         child: DropDownField(
             controller: disMi,
-            hintText: "เลือกระยะทาง",
+            hintText: "$kmDrop",
             enabled: true,
             itemsVisibleInDropdown: 3,
             items: mi,
@@ -423,7 +441,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
         child: DropDownField(
             controller: disHalf,
-            hintText: "เลือกระยะทาง",
+            hintText: "$kmDrop",
             enabled: true,
             itemsVisibleInDropdown: 3,
             items: half,
@@ -444,7 +462,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
         child: DropDownField(
             controller: disFull,
-            hintText: "เลือกระยะทาง",
+            hintText: "$kmDrop",
             enabled: true,
             itemsVisibleInDropdown: 3,
             items: full,
