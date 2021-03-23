@@ -40,6 +40,7 @@ class _ProFileState extends State<ProFile> {
   var sumTime = "";
   var len;
   var durate = "0:00:00";
+  var timeTotal = '';
 
   var dd = Duration(hours: 0,minutes: 0,seconds: 0);
 
@@ -90,6 +91,7 @@ class _ProFileState extends State<ProFile> {
         var d = dd.toString();
         durate = d.substring(0,7);
         print('durate: $durate');
+        timeTotal = durate;
         // sum = int.parse(dd);
         // print(sum);
         // var htos = h * 60 * 60;
@@ -361,7 +363,7 @@ class _ProFileState extends State<ProFile> {
                       child: Text('$sumTime', textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ),
                     Expanded(
-                      child: Text('$durate',textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
+                      child: Text('$timeTotal',textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ),
                   ],
                 ),

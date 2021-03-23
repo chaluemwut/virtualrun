@@ -372,7 +372,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                   child: Container(
 
                     child: RaisedButton.icon(
-                      label: Text('เพิ่มรูปภาพ'),
+                      label: Text('เปลี่ยนรูปภาพ'),
                       icon: Icon(Icons.add_a_photo),
                       onPressed: getImage,
                     ),

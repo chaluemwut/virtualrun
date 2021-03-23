@@ -422,6 +422,24 @@ class _PauseState extends State<Pause> {
       )
   );
 
+  removeList() async{
+    print("remove");
+    print(allRunId);
+    print(userId);
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/save_position/remove?id=${allRunId}&userId=${userId}',headers: header);
+    print(data);
+    var jsonData = json.decode(data.body);
+    if(jsonData['status'] == 0){
+      print("remove แล้ว");
+      setState(() {
+
+      });
+    }else{
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     date = ("${_dateTime.day}/${_dateTime.month}/${_dateTime.year}");
@@ -557,6 +575,7 @@ class _PauseState extends State<Pause> {
                                    saveToData();
                                    saveInData();
                                    saveSuccess();
+                                   removeList();
                                    showCustomDialog(context);
                                      // Navigator.pushReplacement(
                                      //     context,
