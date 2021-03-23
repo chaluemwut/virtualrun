@@ -140,6 +140,7 @@ class _ProFileState extends State<ProFile> {
       if(len == 0){
         len = 1;
         sumKm = "0.0";
+        timeTotal = "0:00:00";
       }
       var hhh = durate.substring(0,1);
       var mmm = durate.substring(2,4);
