@@ -248,16 +248,14 @@ class _EditDataScreenState extends State<EditDataScreen> {
             ),
           ),
         ),
-        body: Padding(
-            padding: EdgeInsets.all(10),
-            child: ListView(
+        body: ListView(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     child: Text('ชื่อรายการวิ่ง',style: TextStyle(color: Colors.black),),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
                   child: TextField(
                     controller: nameAll,
                     decoration: InputDecoration(
@@ -268,7 +266,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: DropDownField(
                     controller: typeRunSelect,
                     hintText: "$dropdown",
@@ -381,7 +379,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
                 Container(
                     height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: RaisedButton(
                       textColor: Colors.white,
                       color: Colors.blue,
@@ -398,15 +396,14 @@ class _EditDataScreenState extends State<EditDataScreen> {
                 ),
 
               ],
-            )
-        )
+            ),
     );
   }
 
   Align funWidget(){
     return Align(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: DropDownField(
             controller: disFun,
             hintText: "$kmDrop",
@@ -427,7 +424,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   Align miWidget(){
     return Align(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: DropDownField(
             controller: disMi,
             hintText: "$kmDrop",
@@ -448,7 +445,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   Align halfWidget(){
     return Align(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: DropDownField(
             controller: disHalf,
             hintText: "$kmDrop",
@@ -469,7 +466,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   Align fullWidget(){
     return Align(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: DropDownField(
             controller: disFull,
             hintText: "$kmDrop",

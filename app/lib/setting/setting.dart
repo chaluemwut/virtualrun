@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:app/config/config.dart';
 import 'package:app/data/add.dart';
 import 'package:app/setting/profile/editpass.dart';
 import 'package:app/setting/profile/editprofile.dart';
+import 'package:app/ui/profile.dart';
 import 'package:app/user/login.dart';
+import 'package:app/util/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/util/utils.dart';
@@ -9,6 +15,7 @@ import 'package:app/widget/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import 'package:app/system/SystemInstance.dart';
+import 'package:http/http.dart' as http;
 
 class Setting extends StatefulWidget {
   static const routeName = '/setting';
@@ -26,6 +33,10 @@ class _SettingState extends State<Setting> {
   bool isPrivateAccount = true;
   String userName;
   SharedPreferences sharedPreferences;
+  SystemInstance _systemInstance = SystemInstance();
+  var img;
+  var id;
+  FileUtil _fileUtil = FileUtil();
 
   Future showCustomDialog(BuildContext context) => showDialog(
       context: context,
@@ -70,6 +81,8 @@ class _SettingState extends State<Setting> {
   @override
   void initState() {
     // TODO: implement initState
+    SystemInstance systemInstance = SystemInstance();
+
     getSharedPreference();
     super.initState();
   }
@@ -79,7 +92,7 @@ class _SettingState extends State<Setting> {
 
   @override
   Widget build(BuildContext context) {
-    SystemInstance systemInstance = SystemInstance();
+
     // userName = systemInstance.userName;
     // _name = userName;
     return Scaffold(

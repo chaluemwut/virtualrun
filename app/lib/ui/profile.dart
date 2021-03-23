@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -41,7 +42,6 @@ class _ProFileState extends State<ProFile> {
   var len;
   var durate = "0:00:00";
   var timeTotal = '';
-
   var dd = Duration(hours: 0,minutes: 0,seconds: 0);
 
   Future getdata()async {Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -236,6 +236,8 @@ class _ProFileState extends State<ProFile> {
     print(img);
     return img;
   }
+  
+  
   @override
   void initState() {
     SystemInstance systemInstance = SystemInstance();
@@ -245,9 +247,13 @@ class _ProFileState extends State<ProFile> {
     getImgProfile();
     getdata();
     img = img;
+    setState(() {
+      getImgProfile();
+    });
     // TODO: implement initState
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {

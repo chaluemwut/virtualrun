@@ -136,21 +136,21 @@ class _EditScreenState extends State<EditScreen> {
     par['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
     FormData formData = FormData.fromMap(params);
     FormData formDatas = FormData.fromMap(par);
-    // dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
-    // dios.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
-    // print("adsad${dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}"}");
-    // dio.post('${Config.API_URL}/user_profile/update_profile',data: formData).then((res) {
-    //   Map resMap = jsonDecode(res.toString()) as Map;
-    //   print("save");
-    //   var data = resMap['status'];
-    //   if(data == 1){
-    //     showCustomDialog(context);
-    //     setState(() {});
-    //   }else{
-    //     CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
-    //   }
-    //
-    // });
+    dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
+    dios.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
+    print("adsad${dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}"}");
+    dio.post('${Config.API_URL}/user_profile/update_profile',data: formData).then((res) {
+      Map resMap = jsonDecode(res.toString()) as Map;
+      print("save");
+      var data = resMap['status'];
+      if(data == 1){
+        showCustomDialog(context);
+        Navigator.pop(context);
+      }else{
+        CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+      }
+
+    });
     // dios.post('${Config.API_URL}/ranking/update',data: formDatas).then((res) {
     //   Map resMap = jsonDecode(res.toString()) as Map;
     //   print("save");
@@ -163,6 +163,9 @@ class _EditScreenState extends State<EditScreen> {
     //   }
     //
     // });
+    setState(() {
+
+    });
   }
 
   @override
@@ -174,6 +177,9 @@ class _EditScreenState extends State<EditScreen> {
     getDataName();
     getDataTel();
     getDataImg();
+    setState(() {
+
+    });
     super.initState();
   }
 
@@ -203,11 +209,11 @@ class _EditScreenState extends State<EditScreen> {
                       style: TextStyle(fontSize: 20),
                     )),
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Text('ชื่อโปรไฟล์',style: TextStyle(color: Colors.black),),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
                   child: TextField(
                     controller: name,
                     decoration: InputDecoration(
@@ -218,11 +224,11 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Text('เบอร์โทรศัพท์',style: TextStyle(color: Colors.black),),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
                   child: TextField(
                     controller: tel,
                     decoration: InputDecoration(
@@ -232,7 +238,6 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                   ),
                 ),
-
 
                 Container(
                   padding: const EdgeInsets.only(top: 30),
@@ -250,9 +255,8 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                  padding: const EdgeInsets.fromLTRB(100, 20, 100, 10),
                   child: Container(
-
                     child: RaisedButton.icon(
                       label: Text('เปลี่ยนรูปภาพ'),
                       icon: Icon(Icons.add_a_photo),
@@ -261,8 +265,8 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 ),
                 Container(
-                  height: 50,
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  height: 70,
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: RaisedButton(
                     textColor: Colors.white,
                     color: Colors.blue,
