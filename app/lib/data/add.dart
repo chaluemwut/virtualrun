@@ -46,6 +46,7 @@ class _AddTournament extends State<AddTournament> {
   var userId;
   SystemInstance systemInstance = SystemInstance();
   String kmDrop = '';
+  TextEditingController price = TextEditingController();
 
 
   // defaultImage() async {
@@ -90,6 +91,7 @@ class _AddTournament extends State<AddTournament> {
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
     params["userId"] = userId.toString();
+    params["price"] = price.text;
     params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
     FormData formData = FormData.fromMap(params);
     // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -228,16 +230,7 @@ class _AddTournament extends State<AddTournament> {
                   ),
                 ),
                 SizedBox(height: 24),
-                // Container(
-                //   padding: EdgeInsets.all(10),
-                //   child: TextField(
-                //     controller: km,
-                //     decoration: InputDecoration(
-                //       border: OutlineInputBorder(),
-                //       labelText: 'ระยะทาง',
-                //     ),
-                //   ),
-                // ),
+                //
                 // Container(
                 //   padding: EdgeInsets.all(10),
                 //   child: TextField(
@@ -280,6 +273,18 @@ class _AddTournament extends State<AddTournament> {
                     ),
                   ],
                 ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: price,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ราคาค่าสมัคร',
+                      hintText: '*0 = ไม่มีค่าสมัคร'
+                    ),
+                  ),
+                ),
+
                 // SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.only(top: 30),

@@ -13,6 +13,8 @@ import 'editdata.dart';
 import 'funrun.dart';
 import 'package:app/data/regis/registerrun.dart';
 
+import 'infodata.dart';
+
 class Mini extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -116,27 +118,22 @@ class _Mini extends State{
         ],
       )
   );
-  Future showCustomDialogNot(BuildContext context) => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text('สำหรับระบบเท่านั้น'),
-        actions: [
-          FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('ปิด'),
-          )
-        ],
-      )
-  );
+
   Future showCustomDialogEdit(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
         content: Text('ต้องการแก้ไขรายการนี้หรือไม่'),
         actions: [
           FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () =>{
+              Navigator.of(context).pop(),
+              Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          InfoDataScreen(aid: aaid,))),
+            },
 
-            child: Text('ไม่',style: TextStyle(color: Colors.red),),
+            child: Text('ดูรายชื่อผู้สมัคร',style: TextStyle(color: Colors.red),),
           ),
           FlatButton(
             onPressed: () => {
@@ -144,31 +141,12 @@ class _Mini extends State{
               checkList(),
               //
             },
-            child: Text("ใช่",style: TextStyle(color: Colors.blue),),
+            child: Text("แก้ไข",style: TextStyle(color: Colors.blue),),
           ),
         ],
       )
   );
-  Future showCustomDialogRegis(BuildContext context) => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text('ต้องการสมัครรายการนี้หรือไม่'),
-        actions: [
-          FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
 
-            child: Text('ไม่',style: TextStyle(color: Colors.red),),
-          ),
-          FlatButton(
-            onPressed: () => {
-              saveData(),
-              Navigator.of(context).pop(),
-            },
-            child: Text("ใช่",style: TextStyle(color: Colors.blue),),
-          ),
-        ],
-      )
-  );
   Future checkList()async{
     print(aaid);
     var user;
@@ -190,27 +168,7 @@ class _Mini extends State{
       showCustomDialogEditFailed(context);
     }
   }
-  void saveData(){
-    print(aaid);
-    Map params = Map();
-    params['id'] = aaid.toString();
-    params['userId'] = userId.toString();
-    print(params);
-    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    http.post('${Config.API_URL}/test_run/save_run',headers: header, body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print("resMap$resMap");
-      var data = resMap['status'];
-      print(data);
-      if(data == 1){
-        print("yes");
-        showCustomDialog(context);
-      }else{
-        print('no');
-        showCustomDialogFailed(context);
-      }
-    });
-  }
+
   Future getMyData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/user_profile/show?userId=$userId',headers: header );
@@ -279,6 +237,24 @@ class _Mini extends State{
 
     });
     return runs;
+  }
+
+  Future check()async{
+    print(userId);
+    print(aaid);
+    Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+    var data = await http.post('${Config.API_URL}/test_run/check?id=$aaid&userId=$userId',headers: header );
+    var _data = jsonDecode(data.body);
+    print(_data);
+    var sum = _data['status'];
+    if (sum == 1){
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  RegisterRun(aaid: aaid,name: nameAll,dis: dis,dates: dates,datee: datee,)));
+    }else{
+      showCustomDialogFailed(context);
+    }
   }
 
   @override
@@ -380,7 +356,7 @@ class _Mini extends State{
                           if(stat == "Admin"){
                             checkList();
                           }else{
-                            showCustomDialogRegis(context);
+                            check();
                             // Navigator.of(context).pop();
                           }
                           // Navigator.push(context,

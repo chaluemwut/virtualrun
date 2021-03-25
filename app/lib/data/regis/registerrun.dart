@@ -1,14 +1,25 @@
+import 'dart:io';
+
+import 'package:cool_alert/cool_alert.dart';
+import 'package:dio/dio.dart';
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/util/file_util.dart';
 import 'package:app/system/SystemInstance.dart';
 import 'dart:convert';
 import 'package:app/config/config.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterRun extends StatefulWidget {
   final int aaid;
+  final String name;
+  final String dis;
+  final String dates;
+  final String datee;
 
-  const RegisterRun({Key key, this.aaid}) : super(key: key);
+  const RegisterRun({Key key, this.aaid, this.name, this.dis, this.dates, this.datee}) : super(key: key);
+
 
 
   @override
@@ -27,9 +38,16 @@ class _RegisterRun extends State<RegisterRun> {
   int _distancing = 0;
   String userName;
   int aID;
-  //int km = 0;
-  //int time = 0;
-  //Login test = new Login();
+  var nameAll;
+  var km;
+  var myDate;
+  var myEndDate;
+  final picker = ImagePicker();
+  var pickedFile;
+  File _image;
+  String size = '';
+  var status = "0";
+
   @override
   void initState(){
     super.initState();
@@ -42,6 +60,14 @@ class _RegisterRun extends State<RegisterRun> {
     //   this._aid = aid;
     //   print('aid save ${_aid}');
     // });
+  }
+  Future getImage() async{
+    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
   }
 
   Future showCustomDialog(BuildContext context) => showDialog(
@@ -59,27 +85,53 @@ class _RegisterRun extends State<RegisterRun> {
 
 
   void onClick(){
-    Map params = Map();
+    Dio dio = Dio();
+    Map<String, dynamic> params = Map();
     params['id'] = aID.toString();
     params['userId'] = userId.toString();
-    print(params);
-    // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
-    // http.post('${Config.API_URL}/test_run/save_run',headers: header, body: params).then((res) {
-    //   Map resMap = jsonDecode(res.body) as Map;
-    //   print(resMap);
-    //
-    // });
-    showCustomDialog(context);
-    setState(() {});
+    params['size'] = size;
+    params['status'] = status.toString();
+    params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
+    FormData formData = FormData.fromMap(params);
+    dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
+    dio.post('${Config.API_URL}/test_run/update',data: formData).then((res) {
+      Map resMap = jsonDecode(res.toString()) as Map;
+      // SystemInstance systemInstance = SystemInstance();
+      // systemInstance.aid = resMap["aid"];
+      // _fileUtil.writeFile(systemInstance.aid);
+      var data = resMap['status'];
+      if(data == 1){
+        Navigator.pop(context);
+        showCustomDialog(context);
+        setState(() {});
+      }else{
+        CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+      }
+
+    });
   }
 
   @override
   Widget build(BuildContext context)  {
     aID = widget.aaid;
+    nameAll = widget.name;
+    km = widget.dis;
+    myDate = widget.dates;
+    myEndDate = widget.datee;
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          title: Text('ลงทะเบียน'),
+          centerTitle: true,
+          title: Text('สมัครวิ่ง'),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.purple, Colors.red],
+                begin: Alignment.bottomRight,
+                end: Alignment.topLeft,
+              ),
+            ),
+          ),
         ),
         body: Padding(
             padding: EdgeInsets.all(10),
@@ -92,27 +144,99 @@ class _RegisterRun extends State<RegisterRun> {
                       'ลงทะเบียนเข้าแข่งขัน',
                       style: TextStyle(fontSize: 20),
                     )),
-                // Container(
-                //   padding: EdgeInsets.all(10),
-                //   child: TextField(
-                //     controller: userNameFun,
-                //     decoration: InputDecoration(
-                //       border: OutlineInputBorder(),
-                //       labelText: 'ชื่อผู้ใช้',
-                //     ),
-                //   ),
-                // ),
-                // Container(
-                //   padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                //   child: TextField(
-                //     obscureText: true,
-                //     controller: passWordFun,
-                //     decoration: InputDecoration(
-                //       border: OutlineInputBorder(),
-                //       labelText: 'รหัสผ่าน',
-                //     ),
-                //   ),
-                // ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  child: Text('ชื่อรายการวิ่ง',style: TextStyle(color: Colors.black),),
+                ),
+                new Container(
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black)
+                  ),
+                  child: Text("$nameAll",style: TextStyle(color: Colors.black),),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Text('ระยะทาง',style: TextStyle(color: Colors.black),),
+                ),
+                new Container(
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black)
+                  ),
+                  child: Text("$km",style: TextStyle(color: Colors.black),),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('วันที่เริ่มวิ่ง -> ',style: TextStyle(color: Colors.black),),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('$myDate',style: TextStyle(color: Colors.black),),
+                    ),
+
+                  ],
+                ),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('วันที่สิ้นสุดการวิ่ง -> ',style: TextStyle(color: Colors.black),),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('$myEndDate',style: TextStyle(color: Colors.black),),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  child: DropDownField(
+                    controller: sizeSelect,
+                    hintText: "เลือกขนาดเสื้อ",
+                    enabled: true,
+                    itemsVisibleInDropdown: 5,
+                    items: mySize,
+                    textStyle: TextStyle(color: Colors.black),
+                    onValueChanged: (value){
+                      setState(() {
+                        size = value;
+                      });
+                    },
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Text('ส่งใบเสร็จยืนยันการชำระเงิน',style: TextStyle(color: Colors.black),),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Center(
+                    child: _image == null ? Container(
+                      child: Center(
+                        child: Text('เลือกสลิปการโอน'),
+                      ),
+                      color: Colors.grey[200],
+                      width: 250.0,
+                      height: 250.0,
+                    ):Image.file(_image),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
+                  child: Container(
+
+                    child: RaisedButton.icon(
+                      label: Text('เพิ่มรูปภาพ'),
+                      icon: Icon(Icons.add_a_photo),
+                      onPressed: getImage,
+                    ),
+                  ),
+                ),
                 Container(
                     height: 50,
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -121,8 +245,6 @@ class _RegisterRun extends State<RegisterRun> {
                       color: Colors.blue,
                       child: Text('ลงทะเบียน'),
                       onPressed: () {
-                        print(userNameFun.text);
-                        print(passWordFun.text);
                         // onRegisterRun();
                         onClick();
                       },
@@ -131,256 +253,13 @@ class _RegisterRun extends State<RegisterRun> {
             )));
   }
 }
+String select = '';
+final sizeSelect = TextEditingController();
 
-
-/*
-class RegisterMini extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _RegisterMini();
-  }
-}
-
-class _RegisterMini extends State {
-  TextEditingController name = TextEditingController();
-  TextEditingController pass = TextEditingController();
-  //int km = 0;
-  //int time = 0;
-
-  void onRegister() {
-    Map params = Map();
-    params['userName'] = name.text;
-    params['passWord'] = pass.text;
-    // params['km'] = km.toString();
-    // params['time'] = time.toString();
-    http.post('${Config.API_URL}/user_mini/save_mini', body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-    });
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('ลงทะเบียน'),
-        ),
-        body: Padding(
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'ลงทะเบียนเข้าแข่งขัน Mini Marathon',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                    controller: name,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'ชื่อผู้ใช้',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: TextField(
-                    obscureText: true,
-                    controller: pass,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'รหัสผ่าน',
-                    ),
-                  ),
-                ),
-                Container(
-                    height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      child: Text('ลงทะเบียน'),
-                      onPressed: () {
-                        print(name.text);
-                        print(pass.text);
-                        onRegister();
-                      },
-                    )),
-              ],
-            )));
-  }
-}
-class RegisterHalf extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _RegisterHalf();
-  }
-}
-
-class _RegisterHalf extends State {
-  TextEditingController name = TextEditingController();
-  TextEditingController pass = TextEditingController();
-  // int km = 0;
-  // int time = 0;
-
-  void onRegister() {
-    Map params = Map();
-    params['userName'] = name.text;
-    params['passWord'] = pass.text;
-    //  params['km'] = km.toString();
-    //  params['time'] = time.toString();
-    http.post('${Config.API_URL}/user_half/save_half', body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-    });
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('ลงทะเบียน'),
-        ),
-        body: Padding(
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'ลงทะเบียนเข้าแข่งขัน Half Marathon',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                    controller: name,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'ชื่อผู้ใช้',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: TextField(
-                    obscureText: true,
-                    controller: pass,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'รหัสผ่าน',
-                    ),
-                  ),
-                ),
-                Container(
-                    height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      child: Text('ลงทะเบียน'),
-                      onPressed: () {
-                        print(name.text);
-                        print(pass.text);
-                        onRegister();
-                      },
-                    )),
-              ],
-            )));
-  }
-}
-class RegisterFull extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _RegisterFull();
-  }
-}
-
-class _RegisterFull extends State {
-  TextEditingController name = TextEditingController();
-  TextEditingController pass = TextEditingController();
-//  int km = 0;
-//  int time = 0;
-
-  void onRegister() {
-    Map params = Map();
-    params['userName'] = name.text;
-    params['passWord'] = pass.text;
-//    params['km'] = km.toString();
-//    params['time'] = time.toString();
-    //Data2 hee = new Data2();
-    http.post('${Config.API_URL}/user_full/save_full', body: params).then((res) {
-      Map resMap = jsonDecode(res.body) as Map;
-      print(resMap);
-    });
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('ลงทะเบียน'),
-        ),
-        body: Padding(
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'ลงทะเบียนเข้าแข่งขัน Full Marathon',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                    controller: name,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'ชื่อผู้ใช้',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: TextField(
-                    obscureText: true,
-                    controller: pass,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'รหัสผ่าน',
-                    ),
-                  ),
-                ),
-                Container(
-                    height: 50,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      child: Text('ลงทะเบียน'),
-                      onPressed: () {
-                        print(name.text);
-                        print(pass.text);
-                        onRegister();
-                      },
-                    )),
-              ],
-            )));
-  }
-}*/
+List<String> mySize = [
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+];
