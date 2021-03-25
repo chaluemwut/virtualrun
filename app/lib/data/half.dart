@@ -36,6 +36,7 @@ class _Half extends State{
   var dates;
   var datee;
   var img;
+  var price;
 
   Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -51,6 +52,9 @@ class _Half extends State{
         i["dateStart"],
         i["dateEnd"],
         i["imgAll"],
+        i["userId"],
+        i["createDate"],
+        i["price"],
       );
       runs.add(run);
     }
@@ -189,6 +193,9 @@ class _Half extends State{
           i["dateStart"],
           i["dateEnd"],
           i["imgAll"],
+          i["userId"],
+          i["createDate"],
+          i["price"],
         );
         runs.add(run);
       }
@@ -206,6 +213,9 @@ class _Half extends State{
           i["dateStart"],
           i["dateEnd"],
           i["imgAll"],
+          i["userId"],
+          i["createDate"],
+          i["price"],
         );
         runs.add(run);
       }
@@ -230,7 +240,7 @@ class _Half extends State{
       Navigator.push(context,
           MaterialPageRoute(
               builder: (BuildContext context) =>
-                  RegisterRun(aaid: aaid,name: nameAll,dis: dis,dates: dates,datee: datee,)));
+                  RegisterRun(aaid: aaid,name: nameAll,dis: dis,dates: dates,datee: datee,price: price,)));
     }else{
       showCustomDialogFailed(context);
     }
@@ -321,6 +331,7 @@ class _Half extends State{
                           dates = runs[index].dateStart;
                           datee = runs[index].dateEnd;
                           img = runs[index].imgAll;
+                          price = runs[index].price;
                           print(aaid);
                           print(nameAll);
                           print(dis);

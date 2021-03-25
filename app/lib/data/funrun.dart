@@ -38,6 +38,7 @@ class _FunRun extends State {
   var dates;
   var datee;
   var img;
+  var price;
 
   Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -53,6 +54,9 @@ class _FunRun extends State {
         i["dateStart"],
         i["dateEnd"],
         i["imgAll"],
+        i["userId"],
+        i["createDate"],
+        i["price"],
       );
       runs.add(run);
     }
@@ -196,6 +200,9 @@ class _FunRun extends State {
           i["dateStart"],
           i["dateEnd"],
           i["imgAll"],
+          i["userId"],
+          i["createDate"],
+          i["price"],
         );
         runs.add(run);
       }
@@ -213,6 +220,9 @@ class _FunRun extends State {
           i["dateStart"],
           i["dateEnd"],
           i["imgAll"],
+          i["userId"],
+          i["createDate"],
+          i["price"],
         );
         runs.add(run);
       }
@@ -238,7 +248,7 @@ class _FunRun extends State {
       Navigator.push(context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          RegisterRun(aaid: aaid,name: nameAll,dis: dis,dates: dates,datee: datee,)));
+                          RegisterRun(aaid: aaid,name: nameAll,dis: dis,dates: dates,datee: datee,price: price,)));
     }else{
       showCustomDialogFailed(context);
     }
@@ -334,6 +344,7 @@ class _FunRun extends State {
                           dates = runs[index].dateStart;
                           datee = runs[index].dateEnd;
                           img = runs[index].imgAll;
+                          price = runs[index].price;
                           print(aaid);
                           print(nameAll);
                           print(dis);
@@ -379,6 +390,11 @@ class Run{
   final String dateStart;
   final String dateEnd;
   final String imgAll;
+  final int userId;
+  final String createDate;
+  final String price;
 
-  Run(this.id, this.nameAll, this.distance, this.type, this.dateStart, this.dateEnd, this.imgAll);
+  Run(this.id, this.nameAll, this.distance, this.type, this.dateStart, this.dateEnd, this.imgAll, this.userId, this.createDate, this.price);
+
+
 }

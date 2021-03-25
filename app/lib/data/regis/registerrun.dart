@@ -17,8 +17,9 @@ class RegisterRun extends StatefulWidget {
   final String dis;
   final String dates;
   final String datee;
+  final String price;
 
-  const RegisterRun({Key key, this.aaid, this.name, this.dis, this.dates, this.datee}) : super(key: key);
+  const RegisterRun({Key key, this.aaid, this.name, this.dis, this.dates, this.datee,this.price}) : super(key: key);
 
 
 
@@ -47,6 +48,7 @@ class _RegisterRun extends State<RegisterRun> {
   File _image;
   String size = '';
   var status = "0";
+  var price;
 
   @override
   void initState(){
@@ -96,9 +98,7 @@ class _RegisterRun extends State<RegisterRun> {
     dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
     dio.post('${Config.API_URL}/test_run/update',data: formData).then((res) {
       Map resMap = jsonDecode(res.toString()) as Map;
-      // SystemInstance systemInstance = SystemInstance();
-      // systemInstance.aid = resMap["aid"];
-      // _fileUtil.writeFile(systemInstance.aid);
+      print(resMap);
       var data = resMap['status'];
       if(data == 1){
         Navigator.pop(context);
@@ -118,6 +118,7 @@ class _RegisterRun extends State<RegisterRun> {
     km = widget.dis;
     myDate = widget.dates;
     myEndDate = widget.datee;
+    price = widget.price;
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
@@ -190,6 +191,18 @@ class _RegisterRun extends State<RegisterRun> {
                     Container(
                       padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
                       child: Text('$myEndDate',style: TextStyle(color: Colors.black),),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('ค่าลงทะเบียน -> ',style: TextStyle(color: Colors.black),),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text('$price.-',style: TextStyle(color: Colors.black),),
                     )
                   ],
                 ),
