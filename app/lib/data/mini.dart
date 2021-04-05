@@ -126,7 +126,7 @@ class _Mini extends State{
   Future showCustomDialogEdit(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text('ต้องการแก้ไขรายการนี้หรือไม่'),
+        content: Text('เลือกรายการที่ต้อง'),
         actions: [
           FlatButton(
             onPressed: () =>{
@@ -365,7 +365,7 @@ class _Mini extends State{
                           print(dates);
                           print(datee);
                           if(stat == "Admin"){
-                            checkList();
+                            showCustomDialogEdit(context);
                           }else{
                             check();
                             // Navigator.of(context).pop();
