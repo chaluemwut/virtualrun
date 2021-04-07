@@ -348,6 +348,8 @@ class _FullMarathon extends State{
                             image: NetworkImage(
                               '${Config.API_URL}/test_all/image?imgAll=${runs[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
                             ),
+                            width: 350,
+                            height: 150,
                             fit: BoxFit.cover,
                           ),
                         ),

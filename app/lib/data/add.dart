@@ -47,6 +47,7 @@ class _AddTournament extends State<AddTournament> {
   SystemInstance systemInstance = SystemInstance();
   String kmDrop = '';
   TextEditingController price = TextEditingController();
+  Dialog dialog = new Dialog();
 
 
   // defaultImage() async {
@@ -61,7 +62,9 @@ class _AddTournament extends State<AddTournament> {
   // }
 
   Future getImage() async{
-    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 50);
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
@@ -80,6 +83,17 @@ class _AddTournament extends State<AddTournament> {
         ],
       )
   );
+  Future showCustomDialogLoad(BuildContext context) => showDialog(
+      context: context,
+      builder: (context){
+        Future.delayed(Duration(seconds: 1),(){
+          Navigator.of(context).pop(true);
+        });
+        return AlertDialog(
+            content: Text('รอสักครู่'),
+        );
+      }
+  );
 
   void add() {
     print(userId);
@@ -97,7 +111,7 @@ class _AddTournament extends State<AddTournament> {
     // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}";
     print("adsad${dio.options.headers["Authorization"] = "Bearer ${_systemInstance.token}"}");
-    dio.post('${Config.API_URL}/test_all/update',data: formData).then((res) {
+    dio.post('${Config.API_URL}/test_all/update',data: formData).then((res) async {
       Map resMap = jsonDecode(res.toString()) as Map;
       // SystemInstance systemInstance = SystemInstance();
       // systemInstance.aid = resMap["aid"];
@@ -318,12 +332,12 @@ class _AddTournament extends State<AddTournament> {
                       textColor: Colors.white,
                       color: Colors.blue,
                       child: Text('เพิ่ม'),
-                      onPressed: () {
+                      onPressed: () async {
                         if(nameAll.text.isNotEmpty && dropdown != '' && kmDrop != ''){
                           print("nameAll $nameAll");
                           print("dropdown $dropdown");
                           print("kmDrop $kmDrop");
-
+                          showCustomDialogLoad(context);
                           add();
                         }else{
                           CoolAlert.show(
@@ -466,3 +480,28 @@ List<String> full = [
   "40",
   "42",
 ];
+
+class Dialog{
+  waiting(BuildContext context,String title,String description){
+    return showDialog(
+        context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        Navigator.of(context).pop();
+          return AlertDialog(
+            title: Text(title),
+
+            content: SingleChildScrollView(
+              child: ListBody(
+
+                children: [
+                  Text(description),
+
+                ],
+              ),
+            ),
+          );
+      }
+    );
+  }
+}
