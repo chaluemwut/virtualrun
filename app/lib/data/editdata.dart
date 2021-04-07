@@ -19,8 +19,9 @@ class EditDataScreen extends StatefulWidget {
   final String dateS;
   final String dateE;
   final String img;
+  final String price;
 
-  const EditDataScreen({Key key, this.aaid, this.name, this.type, this.km, this.dateS, this.dateE,this.img}) : super(key: key);
+  const EditDataScreen({Key key, this.aaid, this.name, this.type, this.km, this.dateS, this.dateE,this.img,this.price}) : super(key: key);
 
 
   @override
@@ -48,6 +49,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
   var kmDrop = '';
   var myName;
   var imgAll;
+  TextEditingController price = TextEditingController();
+  var myPrice;
 
   Future<Null> _selectDate(BuildContext context) async{
     final DateTime picker = await showDatePicker(
@@ -86,7 +89,10 @@ class _EditDataScreenState extends State<EditDataScreen> {
     }
   }
   Future getImage() async{
-    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 100
+    );
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
@@ -164,15 +170,28 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
   void add() {
     print(userId);
+    var isName;
+    var isPrice;
+    if(nameAll.text.isEmpty){
+      isName = myName;
+    }else{
+      isName = nameAll.text;
+    }
+    if(price.text.isEmpty){
+      isPrice = myPrice;
+    }else{
+      isPrice = price.text;
+    }
     Dio dio = Dio();
     Map<String, dynamic> params = Map();
     params['id'] = aid;
-    params['nameAll'] = nameAll.text;
+    params['nameAll'] = isName.toString();
     params["distance"] = kmDrop;
     params["type"] = dropdown;
     params["dateStart"] = myDate;
     params["dateEnd"] = myEndDate;
     params["userId"] = userId.toString();
+    params["price"] = isPrice.toString();
     params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
     FormData formData = FormData.fromMap(params);
     // Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -213,6 +232,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
     myDate = widget.dateS;
     myEndDate = widget.dateE;
     imgAll = widget.img;
+    myPrice = widget.price;
     print(myName);
     print(kmDrop);
     print(dropdown);
@@ -319,6 +339,21 @@ class _EditDataScreenState extends State<EditDataScreen> {
                 //     ),
                 //   ),
                 // ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  child: Text('ราคาค่าสมัคร',style: TextStyle(color: Colors.black),),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                  child: TextField(
+                    controller: price,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        // labelText: 'ชื่อรายการวิ่ง',
+                        hintText: "$myPrice"
+                    ),
+                  ),
+                ),
                 Row(
                   children: [
                     Expanded(

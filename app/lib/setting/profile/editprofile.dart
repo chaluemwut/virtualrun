@@ -31,12 +31,38 @@ class _EditScreenState extends State<EditScreen> {
   var pickedFile;
 
   Future getImage() async{
-    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 100
+    );
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       }
     });
+    // File image = await ImagePicker.pickImage(source: source);
+    // if(image != null){
+    //   File cropper = await ImageCropper.cropImage(
+    //     sourcePath: image.path,
+    //     aspectRatio: CropAspectRatio(
+    //       ratioX: 1,ratioY: 1,
+    //     ),
+    //     compressQuality: 100,
+    //     maxWidth: 700,
+    //     maxHeight: 700,
+    //     compressFormat: ImageCompressFormat.png,
+    //     androidUiSettings: AndroidUiSettings(
+    //
+    //       toolbarColor: Colors.deepOrange,
+    //       toolbarTitle: "Cropper",
+    //       statusBarColor: Colors.deepOrange.shade900,
+    //       backgroundColor: Colors.white,
+    //     ),
+    //   );
+    //   this.setState(() {
+    //     _image = cropper;
+    //   });
+    // }
   }
 
   Future getData()async{
@@ -122,6 +148,18 @@ class _EditScreenState extends State<EditScreen> {
     print(userName);
     print(name);
     print(tel);
+    var isName;
+    var isTel;
+    if(name.text.isEmpty){
+      isName = myName;
+    }else{
+      isName = name.text;
+    }
+    if(tel.text.isEmpty){
+      isTel = myTel;
+    }else{
+      isTel = tel.text;
+    }
     Dio dio = Dio();
     Dio dios = Dio();
     Map<String, dynamic> params = Map();
@@ -129,8 +167,8 @@ class _EditScreenState extends State<EditScreen> {
     params['userId'] = userId;
     params['userName'] = userName.toString();
     params['passWord'] = passWord.toString();
-    params['name'] = name.text;
-    params['tel'] = tel.text;
+    params['name'] = isName.toString();
+    params['tel'] = isTel.toString();
     params['au'] = au.toString();
     params['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
     par['fileImg'] = MultipartFile.fromBytes(_image.readAsBytesSync(), filename: "filename.png");
@@ -243,14 +281,14 @@ class _EditScreenState extends State<EditScreen> {
                   padding: const EdgeInsets.only(top: 30),
                   child: Center(
                     child: _image == null ? Container(
-                      child: FadeInImage(
-                        placeholder: AssetImage('assets/images/loading.gif'),
-                        image: NetworkImage(
-                          '${Config.API_URL}/user_profile/image?imgProfile=$myImg',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                        child: FadeInImage(
+                          placeholder: AssetImage('assets/images/loading.gif'),
+                          image: NetworkImage(
+                            '${Config.API_URL}/user_profile/image?imgProfile=$myImg',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                          ),
+                          width: 250.0 ,
+                          height: 250.0,
                         ),
-                        width: 250.0,
-                        height: 250.0,
-                      ),
                     ):Image.file(_image),
                   ),
                 ),
@@ -260,7 +298,9 @@ class _EditScreenState extends State<EditScreen> {
                     child: RaisedButton.icon(
                       label: Text('เปลี่ยนรูปภาพ'),
                       icon: Icon(Icons.add_a_photo),
-                      onPressed: getImage,
+                      onPressed: (){
+                        getImage();
+                      },
                     ),
                   ),
                 ),
@@ -272,11 +312,11 @@ class _EditScreenState extends State<EditScreen> {
                     color: Colors.blue,
                     child: Text('บันทึก'),
                     onPressed: () {
-                      if(name.text.isNotEmpty && tel.text.isNotEmpty){
+                      // if(name.text.isNotEmpty && tel.text.isNotEmpty){
                         onClick();
-                      }else{
-                        CoolAlert.show(context: context, type: CoolAlertType.warning, text: 'กรุณากรอกข้อมูลให้ครบถ้วน');
-                      }
+                      // }else{
+                      //   CoolAlert.show(context: context, type: CoolAlertType.warning, text: 'กรุณากรอกข้อมูลให้ครบถ้วน');
+                      // }
                     },
                   ),
                 ),

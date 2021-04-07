@@ -64,7 +64,10 @@ class _RegisterRun extends State<RegisterRun> {
     // });
   }
   Future getImage() async{
-    pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 200.0,maxWidth: 200.0,imageQuality: 50);
+    pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 50
+    );
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
@@ -119,6 +122,7 @@ class _RegisterRun extends State<RegisterRun> {
     myDate = widget.dates;
     myEndDate = widget.datee;
     price = widget.price;
+    print(price);
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(

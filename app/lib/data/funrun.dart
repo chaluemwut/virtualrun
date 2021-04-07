@@ -150,7 +150,7 @@ class _FunRun extends State {
       Navigator.push(context,
             MaterialPageRoute(
                 builder: (BuildContext context) =>
-                    EditDataScreen(aaid: aaid,name: nameAll,km: dis,type: type,dateE: datee,dateS: dates,img: img,)));
+                    EditDataScreen(aaid: aaid,name: nameAll,km: dis,type: type,dateE: datee,dateS: dates,img: img,price: price,)));
     }else{
       showCustomDialogEditFailed(context);
     }
@@ -316,15 +316,44 @@ class _FunRun extends State {
           itemCount: runs.length,
           itemBuilder: (BuildContext context, int index){
             print('data');
-              return Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                child: InkWell(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Container(
-                          height: 50.0,
-                          width: 50.0,
+              return Container(
+                margin:EdgeInsets.all(8.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                  child: InkWell(
+                    onTap: () {
+                      aaid = runs[index].id;
+                      nameAll = runs[index].nameAll;
+                      dis = runs[index].distance;
+                      type = runs[index].type;
+                      dates = runs[index].dateStart;
+                      datee = runs[index].dateEnd;
+                      img = runs[index].imgAll;
+                      price = runs[index].price;
+                      print(aaid);
+                      print(nameAll);
+                      print(dis);
+                      print(type);
+                      print(dates);
+                      print(datee);
+                      print(price);
+                      if(stat == "Admin"){
+                        showCustomDialogEdit(context);
+                      }else{
+                        // showCustomDialogRegis(context);
+                        // Navigator.of(context).pop();
+                        check();
+                        //
+                      }
+                      //
+                    },
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0),
+                          ),
                           child: FadeInImage(
                             placeholder: AssetImage('assets/images/loading.gif'),
                             image: NetworkImage(
@@ -333,39 +362,17 @@ class _FunRun extends State {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        title: Text("รายการ "+runs[index].nameAll +" ระยะทาง "+ runs[index].distance),
-                        subtitle: Text(' จากวันที่ ' + runs[index].dateStart + ' ถึงวันที่ '
-                            + runs[index].dateEnd),
-                        onTap: () {
-                          aaid = runs[index].id;
-                          nameAll = runs[index].nameAll;
-                          dis = runs[index].distance;
-                          type = runs[index].type;
-                          dates = runs[index].dateStart;
-                          datee = runs[index].dateEnd;
-                          img = runs[index].imgAll;
-                          price = runs[index].price;
-                          print(aaid);
-                          print(nameAll);
-                          print(dis);
-                          print(type);
-                          print(dates);
-                          print(datee);
-                          if(stat == "Admin"){
-                            showCustomDialogEdit(context);
-                          }else{
-                            // showCustomDialogRegis(context);
-                            // Navigator.of(context).pop();
-                            check();
-                            //
-                          }
-                          //
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                        ListTile(
+                          title: Text("รายการ "+runs[index].nameAll +" ระยะทาง "+ runs[index].distance),
+                          subtitle: Text(' จากวันที่ ' + runs[index].dateStart + ' ถึงวันที่ '
+                              + runs[index].dateEnd),
 
+                        ),
+                      ],
+                    ),
+                  ),
+
+                ),
               );
             }
         ),
