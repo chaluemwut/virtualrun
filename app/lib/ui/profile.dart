@@ -260,15 +260,6 @@ class _ProFileState extends State<ProFile> {
     SystemInstance systemInstance = SystemInstance();
     userName = systemInstance.userName;
     size = Screen(MediaQuery.of(context).size);
-    Future getImages()async{
-      pickedFile = await picker.getImage(source: ImageSource.gallery,maxHeight: 300.0,maxWidth: 300.0);
-      print('dgjdlkjlg');
-      setState(() {
-        if(pickedFile != null){
-          _images = File(pickedFile.path);
-        }
-      });
-    }
 
 
     return Scaffold(
@@ -415,16 +406,21 @@ class _ProFileState extends State<ProFile> {
               //   foregroundColor: Colors.white,
               //   maxRadius: size.getWidthPx(50),
               //   backgroundColor: Colors.white,
-                child: FadeInImage(
-                  fadeInCurve: Curves.bounceIn,
-                  placeholder: AssetImage('assets/images/loading.gif'),
-                  image: NetworkImage(
-                    '${Config.API_URL}/user_profile/image?imgProfile=$img',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+
+                child: img == null ? Image.asset(
+                    'assets/images/nonprofile.png',
+                    height: 150,
+                    fit:BoxFit.fill
+                ):FadeInImage(
+                    placeholder: AssetImage('assets/images/loading.gif'),
+                    image: NetworkImage(
+                      '${Config.API_URL}/user_profile/image?imgProfile=$img',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                    ),
+                    fit: BoxFit.cover,
                   ),
-                  fit: BoxFit.cover,
                 ),
               ),
-          ),
+          // ),
         ],
       ),
       // ),

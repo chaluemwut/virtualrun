@@ -52,7 +52,9 @@ class _DataHalfState extends State<DataHalf> {
     // var len = (sum.length).toString();
     // print(len);
     // int le = int.parse(len);
+    setState(() {
 
+    });
     print(myList);
     return myList;
   }
@@ -86,6 +88,10 @@ class _DataHalfState extends State<DataHalf> {
     SystemInstance systemInstance = SystemInstance();
     userId = systemInstance.userId;
     getData();
+    get();
+    setState(() {
+
+    });
     super.initState();
   }
 
@@ -93,59 +99,56 @@ class _DataHalfState extends State<DataHalf> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: FutureBuilder(
-          future: get(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(0),
-                  child: Loading(
-                    indicator: BallPulseIndicator(),
-                    size: 100.0,color: Colors.pink,
-                  ),
-                ),
-              );
-            } else {
-              return ListView.builder(
-                // itemBuilder: getItem ,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        Card(
-                          child: InkWell(
-                            child: ListTile(
-                              leading: Container(
-                                height: 50.0,
-                                width: 50.0,
-                                child: FadeInImage(
-                                  placeholder: AssetImage('assets/images/loading.gif'),
-                                  image: NetworkImage(
-                                    '${Config.API_URL}/user_profile/image?imgProfile=${snapshot.data[index].imgProfile}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
+          child: myList.isEmpty ? Center(
+            child: Padding(
+              padding: EdgeInsets.all(0),
+              child: Loading(
+                indicator: BallPulseIndicator(),
+                size: 100.0,color: Colors.pink,
+              ),
+            ),
+          ):
+          ListView.builder(
+            // itemBuilder: getItem ,
+              itemCount: myList.length,
+              itemBuilder: (BuildContext context, int index) {
+                print("hehhe${myList[index].imgRanking}");
+                return Column(
+                  children: [
+                    Card(
+                      child: InkWell(
+                        child: ListTile(
+                          leading: Container(
+                            height: 50.0,
+                            width: 50.0,
+                            child: (myList[index].imgRanking) == null ? Image.asset(
+                              'assets/images/nonprofile.png',
+                              height: 150,
+                              fit:BoxFit.cover,
+                            ):FadeInImage(
+                              placeholder: AssetImage('assets/images/loading.gif'),
+                              image: NetworkImage(
+                                '${Config.API_URL}/user_profile/image?imgProfile=${myList[index].imgRanking}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
                               ),
-                              title: Text(snapshot.data[index].name),
-                              subtitle: Text('จากรายการ ' +snapshot.data[index].nameAll + '\nเวลาที่ทำได้ ' + snapshot.data[index].time),
-                              onTap: (){
-                                if(stat == 'Admin'){
-                                  print("yes");
-                                  var user = snapshot.data[index].userId;
-                                  print("user$user");
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataUserScreen(userId: user,)));
-                                }
-                              },
+                              fit: BoxFit.cover,
                             ),
                           ),
+                          title: Text(myList[index].name),
+                          subtitle: Text('จากรายการ ' +myList[index].nameAll + '\nเวลาที่ทำได้ ' + myList[index].time),
+                          onTap: (){
+                            if(stat == 'Admin'){
+                              print("yes");
+                              var user = myList[index].userId;
+                              print("user$user");
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => DataUserScreen(userId: user,)));
+                            }
+                          },
                         ),
-                      ],
-                    );
-                  });
-            }
-          },
-        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
       ),
     );
   }

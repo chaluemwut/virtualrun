@@ -146,6 +146,7 @@ class _RunnerState extends State<Runner> {
                                        isType = snapshot.data[index].type;
                                        dateS = snapshot.data[index].dateStart;
                                        dateE = snapshot.data[index].dateEnd;
+                                       print(distance);
                                        var conS = new DateFormat('dd/mm/yyyy').parse(dateS);
                                        var conE = new DateFormat('dd/mm/yyyy').parse(dateE);
                                        print("conS $conS");

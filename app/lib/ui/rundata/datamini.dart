@@ -53,6 +53,9 @@ class _DataMiniState extends State<DataMini> {
     // int le = int.parse(len);
 
     print(myList);
+    setState(() {
+
+    });
     return myList;
   }
   Future getData()async{
@@ -84,6 +87,10 @@ class _DataMiniState extends State<DataMini> {
     SystemInstance systemInstance = SystemInstance();
     userId = systemInstance.userId;
     getData();
+    get();
+    setState(() {
+
+    });
     super.initState();
   }
 
@@ -91,11 +98,7 @@ class _DataMiniState extends State<DataMini> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: FutureBuilder(
-          future: get(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
-              return Center(
+        child: myList.isEmpty ? Center(
                 child: Padding(
                   padding: EdgeInsets.all(0),
                   child: Loading(
@@ -103,12 +106,12 @@ class _DataMiniState extends State<DataMini> {
                     size: 100.0,color: Colors.pink,
                   ),
                 ),
-              );
-            } else {
-              return ListView.builder(
+              ):
+            ListView.builder(
                 // itemBuilder: getItem ,
-                  itemCount: snapshot.data.length,
+                  itemCount: myList.length,
                   itemBuilder: (BuildContext context, int index) {
+                    print("hehhe${myList[index].imgRanking}");
                     return Column(
                       children: [
                         Card(
@@ -117,20 +120,24 @@ class _DataMiniState extends State<DataMini> {
                               leading: Container(
                                 height: 50.0,
                                 width: 50.0,
-                                child: FadeInImage(
+                                child: myList[index].imgRanking == null ? Image.asset(
+                                  'assets/images/nonprofile.png',
+                                  height: 150,
+                                  fit:BoxFit.cover,
+                                ):FadeInImage(
                                   placeholder: AssetImage('assets/images/loading.gif'),
                                   image: NetworkImage(
-                                    '${Config.API_URL}/user_profile/image?imgProfile=${snapshot.data[index].imgProfile}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                                    '${Config.API_URL}/user_profile/image?imgProfile=${myList[index].imgRanking}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
                                   ),
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              title: Text(snapshot.data[index].name),
-                              subtitle: Text('จากรายการ ' +snapshot.data[index].nameAll + '\nเวลาที่ทำได้ ' + snapshot.data[index].time),
+                              title: Text(myList[index].name),
+                              subtitle: Text('จากรายการ ' +myList[index].nameAll + '\nเวลาที่ทำได้ ' + myList[index].time),
                               onTap: (){
                                 if(stat == 'Admin'){
                                   print("yes");
-                                  var user = snapshot.data[index].userId;
+                                  var user = myList[index].userId;
                                   print("user$user");
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => DataUserScreen(userId: user,)));
                                 }
@@ -140,11 +147,9 @@ class _DataMiniState extends State<DataMini> {
                         ),
                       ],
                     );
-                  });
-            }
-          },
-        ),
-      ),
-    );
+                  })
+            ),
+  );
+
   }
 }
