@@ -68,6 +68,7 @@ class _PauseState extends State<Pause> {
   var name;
   var nameAll;
   var result = "0";
+  var myTid;
 
   var timer;
   var dd = Duration(hours: 0,minutes: 0,seconds: 0);
@@ -352,19 +353,24 @@ class _PauseState extends State<Pause> {
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
       http.post('${Config.API_URL}/total_data/update',headers: header,body: params).then((res){
         Map resMap = jsonDecode(res.body) as Map;
-        print(resMap);
+        print("resres$resMap");
+        myTid = resMap['tid'];
+        print("mymy$myTid");
+        saveInData();
       });
     }
 
+    // saveInData();
     setState(() {
 
     });
   }
   void saveInData(){
-
+    print("mytid$myTid");
     Map params = Map();
     params['userId'] = userId.toString();
     params['id'] = allRunId.toString();
+    params['tid'] = myTid.toString();
     params['km'] = theKm.toString();
     params['time'] = theTime.toString();
     params['type'] = theType.toString();
@@ -573,7 +579,7 @@ class _PauseState extends State<Pause> {
                                  iconSize: 100,
                                  onPressed: () {
                                    saveToData();
-                                   saveInData();
+                                   // saveInData();
                                    saveSuccess();
                                    removeList();
                                    showCustomDialog(context);
