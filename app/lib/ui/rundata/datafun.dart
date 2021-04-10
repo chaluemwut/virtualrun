@@ -38,38 +38,47 @@ class _DataFunState extends State<DataFun> {
   List nameList = List();
   List imgList = List();
   List<String> theList = List();
+  bool _isLoading = true;
 
   Future get()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/ranking/show_type?type=Fun Run',headers: header);
-    var _data = jsonDecode(data.body);
-    var sum = _data['data'];
-    print("length: ${sum.length}");
-    print("sum: $sum");
-    for(var i in sum){
-      print(i);
-      MyGetData myGetData = MyGetData(
-          i['rankingId'],
-          i['userId'],
-          i['name'],
-          i['nameAll'],
-          i['km'],
-          i['time'],
-          i['type'],
-          i['imgRanking']
-      );
-      print(myGetData);
-      myList.add(myGetData);
-      print(myList);
-    }
-    // var len = (sum.length).toString();
-    // print(len);
-    // int le = int.parse(len);
-    setState(() {
+    if(data.statusCode == 200) {
+      _isLoading = false;
+      var _data = jsonDecode(data.body);
+      var sum = _data['data'];
+      print("length: ${sum.length}");
+      print("sum: $sum");
+      for (var i in sum) {
+        print(i);
+        MyGetData myGetData = MyGetData(
+            i['rankingId'],
+            i['userId'],
+            i['name'],
+            i['nameAll'],
+            i['km'],
+            i['time'],
+            i['type'],
+            i['imgRanking']
+        );
+        print(myGetData);
+        myList.add(myGetData);
+        print(myList);
+      }
+      // var len = (sum.length).toString();
+      // print(len);
+      // int le = int.parse(len);
+      setState(() {
 
-    });
-    print(myList);
-    return myList;
+      });
+      print(myList);
+      return myList;
+    }else{
+      _isLoading = false;
+      setState(() {
+
+      });
+    }
   }
 
   // Future getMyDataFun()async{
@@ -201,6 +210,19 @@ class _DataFunState extends State<DataFun> {
     return stat;
   }
 
+  // Future<Album> fetchAlbum() async {
+  //   final response = await http.get(Uri.https('jsonplaceholder.typicode.com', 'albums/1'));
+  //
+  //   if (response.statusCode == 200) {
+  //     // If the server did return a 200 OK response,
+  //     // then parse the JSON.
+  //     return Album.fromJson(jsonDecode(response.body));
+  //   } else {
+  //     // If the server did not return a 200 OK response,
+  //     // then throw an exception.
+  //     throw Exception('Failed to load album');
+  //   }
+  // }
 
   @override
   void initState() {
@@ -220,9 +242,9 @@ class _DataFunState extends State<DataFun> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          child: myList.isEmpty ? Center(
+          child: _isLoading ? Center(
             child: Padding(
-              padding: EdgeInsets.all(0),
+              padding: EdgeInsets.zero,
               child: Loading(
                 indicator: BallPulseIndicator(),
                 size: 100.0,color: Colors.pink,
@@ -242,7 +264,7 @@ class _DataFunState extends State<DataFun> {
                           leading: Container(
                             height: 50.0,
                             width: 50.0,
-                            child: (myList[index].imgRanking) == null ? Image.asset(
+                            child: myList[index].imgRanking == null ? Image.asset(
                               'assets/images/nonprofile.png',
                               height: 150,
                               fit:BoxFit.cover,
@@ -269,11 +291,11 @@ class _DataFunState extends State<DataFun> {
                     ),
                   ],
                 );
-              }),
+              })
       ),
     );
-  }
-}
+      }
+    }
 class TotalData{
   final int successId;
   final int userId;

@@ -25,38 +25,47 @@ class _DataHalfState extends State<DataHalf> {
   List<MyGetData> myList = [];
   var stat;
   var userId;
+  bool _isLoading = true;
 
   Future get()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/ranking/show_type?type=Half',headers: header);
-    var _data = jsonDecode(data.body);
-    var sum = _data['data'];
-    print("length: ${sum.length}");
-    print("sum: $sum");
-    for(var i in sum){
-      print(i);
-      MyGetData myGetData = MyGetData(
-          i['rankingId'],
-          i['userId'],
-          i['name'],
-          i['nameAll'],
-          i['km'],
-          i['time'],
-          i['type'],
-          i['imgRanking']
-      );
-      print(myGetData);
-      myList.add(myGetData);
-      print(myList);
-    }
-    // var len = (sum.length).toString();
-    // print(len);
-    // int le = int.parse(len);
-    setState(() {
+    if(data.statusCode == 200) {
+      _isLoading = false;
+      var _data = jsonDecode(data.body);
+      var sum = _data['data'];
+      print("length: ${sum.length}");
+      print("sum: $sum");
+      for (var i in sum) {
+        print(i);
+        MyGetData myGetData = MyGetData(
+            i['rankingId'],
+            i['userId'],
+            i['name'],
+            i['nameAll'],
+            i['km'],
+            i['time'],
+            i['type'],
+            i['imgRanking']
+        );
+        print(myGetData);
+        myList.add(myGetData);
+        print(myList);
+      }
+      // var len = (sum.length).toString();
+      // print(len);
+      // int le = int.parse(len);
+      setState(() {
 
-    });
-    print(myList);
-    return myList;
+      });
+      print(myList);
+      return myList;
+    }else{
+      _isLoading = false;
+      setState(() {
+
+      });
+    }
   }
   Future getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -99,9 +108,9 @@ class _DataHalfState extends State<DataHalf> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          child: myList.isEmpty ? Center(
+          child: _isLoading ? Center(
             child: Padding(
-              padding: EdgeInsets.all(0),
+              padding: EdgeInsets.zero,
               child: Loading(
                 indicator: BallPulseIndicator(),
                 size: 100.0,color: Colors.pink,

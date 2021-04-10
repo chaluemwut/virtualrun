@@ -33,26 +33,30 @@ class _RunnerState extends State<Runner> {
   List aaa = List();
   List<DataRunner> _listKm = List();
   SystemInstance _instance = SystemInstance();
+  bool _isLoading = true;
+
   @override
   void initState(){
     SystemInstance systemInstance = SystemInstance();
     id = systemInstance.userId;
     print(id);
     print(_systemInstance.token);
-
+    _getData();
     super.initState();
   }
 
-  Future<List<DataRun>> _getData()async{
+  Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
     var data = await http.post('${Config.API_URL}/test_run/test_show?userId=${id}',headers: header );
-    var _data = jsonDecode(data.body);
-    var sum = _data['data'];
-    // print(_data);
-    // print(sum);
-    for(var i in sum){
-      print(i);
-      DataRun run = DataRun(
+    if(data.statusCode == 200) {
+      _isLoading = false;
+      var _data = jsonDecode(data.body);
+      var sum = _data['data'];
+      // print(_data);
+      // print(sum);
+      for (var i in sum) {
+        print(i);
+        DataRun run = DataRun(
           i["id"],
           i["nameAll"],
           i["distance"],
@@ -60,12 +64,21 @@ class _RunnerState extends State<Runner> {
           i["dateStart"],
           i["dateEnd"],
           i["imgAll"],
-      );
-      // print("sada: ${run}");
-      dataRuns.add(run);
+        );
+        // print("sada: ${run}");
+        dataRuns.add(run);
+      }
+      // print("Run: ${dataRuns}");
+      setState(() {
+
+      });
+      return dataRuns;
+    }else{
+      _isLoading = false;
+      setState(() {
+
+      });
     }
-    // print("Run: ${dataRuns}");
-    return Future.value(dataRuns);
     // return dataRuns;
   }
   Future showCustomDialog(BuildContext context) => showDialog(
@@ -101,90 +114,190 @@ class _RunnerState extends State<Runner> {
         ),
       ),
       body: Container(
-          child:FutureBuilder(
-                    future: _getData(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                         if(snapshot.data == null){
-                           return Center(
-                             child: Padding(
-                               padding: EdgeInsets.all(0),
-                               child: Loading(
-                                 indicator: BallPulseIndicator(),
-                                 size: 100.0,color: Colors.pink,
-                               ),
-                             ),
-                           );
-                         } else {
-                           return ListView.builder(
-                               shrinkWrap: true,
-                               // itemBuilder: getItem ,
-                               itemCount: snapshot.data.length,
-                               itemBuilder: (BuildContext context, int index) {
-                                 return Card(
-                                   shape: RoundedRectangleBorder(
-                                       borderRadius:
-                                       BorderRadius.all(Radius.circular(8.0))),
-                                   child: ListTile(
-                                     leading: Container(
-                                       height: 50.0,
-                                       width: 50.0,
-                                       child: FadeInImage(
-                                         placeholder: AssetImage('assets/images/loading.gif'),
-                                         image: NetworkImage(
-                                             '${Config.API_URL}/test_all/image?imgAll=${snapshot.data[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
-                                         ),
-                                         fit: BoxFit.cover,
-                                       ),
-                                     ),
-                                     title: Text('${snapshot.data[index].nameAll}'),
-                                     subtitle: Text(' จากวันที่ ' + snapshot.data[index].dateStart + ' ถึงวันที่ '
-                                         + snapshot.data[index].dateEnd),
-                                     onTap: () {
-                                       int aaId = snapshot.data[index].id;
-                                       print("allRunId = $aaId");
-                                       distance = snapshot.data[index].distance;
-                                       isType = snapshot.data[index].type;
-                                       dateS = snapshot.data[index].dateStart;
-                                       dateE = snapshot.data[index].dateEnd;
-                                       print(distance);
-                                       var conS = new DateFormat('dd/mm/yyyy').parse(dateS);
-                                       var conE = new DateFormat('dd/mm/yyyy').parse(dateE);
-                                       print("conS $conS");
-                                       print("conE $conE");
-                                       var conN = new DateTime.now();
-                                       var date2s = ('${_date.day}/${_date.month}/${_date.year}');
-                                       var s2date = new DateFormat('dd/mm/yyyy').parse(date2s);
-                                       var dateN2s = ('${conN.day}/${conN.month}/${conN.year}');
-                                       var s2dateN = new DateFormat('dd/mm/yyyy').parse(dateN2s);
-                                       var ds = ('29/01/2021');
-                                       var de = ('31/01/2021');
-                                       var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
-                                       var de2d = new DateFormat('dd/mm/yyyy').parse(de);
-                                       print("s2date $s2date");
-                                       print("s2dateN $s2dateN");
-                                       if((s2date==conS || s2date.isAfter(conS)) && (s2date==conE || s2date.isBefore(conE))){
-                                         print('0');
-                                         // Navigator.push(
-                                         //     context,
-                                         //     MaterialPageRoute(
-                                         //         builder: (BuildContext context) =>
-                                         //             Running(idrunner: aaId,isType:isType)));
-                                         Navigator.push(
-                                             context,
-                                             MaterialPageRoute(
-                                                 builder: (BuildContext context) =>
-                                                     KilometerScreen(id: aaId,type:isType,km:distance ,)));
-                                       }else{
-                                         print('1');
-                                         showCustomDialog(context);
-                                       }
-                                     },
-                                   ),
-                                 );
-                               });
-                         }
-                    }),
+        child: _isLoading ? Center(
+          child: Padding(
+            padding: EdgeInsets.all(0),
+            child: Loading(
+              indicator: BallPulseIndicator(),
+              size: 100.0,
+              color: Colors.pink,
+            ),
           ),
+        ): ListView.builder(
+            itemCount: dataRuns.length,
+            itemBuilder: (BuildContext context, int index){
+              print('data');
+              return Container(
+                margin:EdgeInsets.all(8.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                  child: InkWell(
+                    onTap: () {
+                      int aaId = dataRuns[index].id;
+                      print("allRunId = $aaId");
+                      distance = dataRuns[index].distance;
+                      isType = dataRuns[index].type;
+                      dateS = dataRuns[index].dateStart;
+                      dateE = dataRuns[index].dateEnd;
+                      print(distance);
+                      var conS = new DateFormat('dd/mm/yyyy').parse(dateS);
+                      var conE = new DateFormat('dd/mm/yyyy').parse(dateE);
+                      print("conS $conS");
+                      print("conE $conE");
+                      var conN = new DateTime.now();
+                      var date2s = ('${_date.day}/${_date.month}/${_date.year}');
+                      var s2date = new DateFormat('dd/mm/yyyy').parse(date2s);
+                      var dateN2s = ('${conN.day}/${conN.month}/${conN.year}');
+                      var s2dateN = new DateFormat('dd/mm/yyyy').parse(dateN2s);
+                      var ds = ('29/01/2021');
+                      var de = ('31/01/2021');
+                      var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
+                      var de2d = new DateFormat('dd/mm/yyyy').parse(de);
+                      print("s2date $s2date");
+                      print("s2dateN $s2dateN");
+                      if((s2date==conS || s2date.isAfter(conS)) && (s2date==conE || s2date.isBefore(conE))){
+                        print('0');
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (BuildContext context) =>
+                        //             Running(idrunner: aaId,isType:isType)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    KilometerScreen(id: aaId,type:isType,km:distance ,)));
+                      }else{
+                        print('1');
+                        showCustomDialog(context);
+                      }
+                      //
+                    },
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0),
+                          ),
+                          child: FadeInImage(
+                            placeholder: AssetImage('assets/images/loading.gif'),
+                            image: NetworkImage(
+                              '${Config.API_URL}/test_all/image?imgAll=${dataRuns[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                            ),
+                            width: 350,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        ListTile(
+                          title: Text("รายการ "+dataRuns[index].nameAll +" ระยะทาง "+ dataRuns[index].distance),
+                          subtitle: Text(' จากวันที่ ' + dataRuns[index].dateStart + ' ถึงวันที่ '
+                              + dataRuns[index].dateEnd),
+
+                        ),
+                      ],
+                    ),
+                  ),
+
+                ),
+              );
+            }
+        ),
+      ),
+
+
+
+
+
+
+
+
+      // Container(
+      //     child:FutureBuilder(
+      //               future: _getData(),
+      //               builder: (BuildContext context, AsyncSnapshot snapshot) {
+      //                    if(snapshot.data == null){
+      //                      return Center(
+      //                        child: Padding(
+      //                          padding: EdgeInsets.all(0),
+      //                          child: Loading(
+      //                            indicator: BallPulseIndicator(),
+      //                            size: 100.0,color: Colors.pink,
+      //                          ),
+      //                        ),
+      //                      );
+      //                    } else {
+      //                      return ListView.builder(
+      //                          shrinkWrap: true,
+      //                          // itemBuilder: getItem ,
+      //                          itemCount: snapshot.data.length,
+      //                          itemBuilder: (BuildContext context, int index) {
+      //                            return Card(
+      //                              shape: RoundedRectangleBorder(
+      //                                  borderRadius:
+      //                                  BorderRadius.all(Radius.circular(8.0))),
+      //                              child: ListTile(
+      //                                leading: Container(
+      //                                  height: 50.0,
+      //                                  width: 50.0,
+      //                                  child: FadeInImage(
+      //                                    placeholder: AssetImage('assets/images/loading.gif'),
+      //                                    image: NetworkImage(
+      //                                        '${Config.API_URL}/test_all/image?imgAll=${snapshot.data[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+      //                                    ),
+      //                                    fit: BoxFit.cover,
+      //                                  ),
+      //                                ),
+      //                                title: Text('${snapshot.data[index].nameAll}'),
+      //                                subtitle: Text(' จากวันที่ ' + snapshot.data[index].dateStart + ' ถึงวันที่ '
+      //                                    + snapshot.data[index].dateEnd),
+      //                                onTap: () {
+      //                                  int aaId = snapshot.data[index].id;
+      //                                  print("allRunId = $aaId");
+      //                                  distance = snapshot.data[index].distance;
+      //                                  isType = snapshot.data[index].type;
+      //                                  dateS = snapshot.data[index].dateStart;
+      //                                  dateE = snapshot.data[index].dateEnd;
+      //                                  print(distance);
+      //                                  var conS = new DateFormat('dd/mm/yyyy').parse(dateS);
+      //                                  var conE = new DateFormat('dd/mm/yyyy').parse(dateE);
+      //                                  print("conS $conS");
+      //                                  print("conE $conE");
+      //                                  var conN = new DateTime.now();
+      //                                  var date2s = ('${_date.day}/${_date.month}/${_date.year}');
+      //                                  var s2date = new DateFormat('dd/mm/yyyy').parse(date2s);
+      //                                  var dateN2s = ('${conN.day}/${conN.month}/${conN.year}');
+      //                                  var s2dateN = new DateFormat('dd/mm/yyyy').parse(dateN2s);
+      //                                  var ds = ('29/01/2021');
+      //                                  var de = ('31/01/2021');
+      //                                  var ds2d = new DateFormat('dd/mm/yyyy').parse(ds);
+      //                                  var de2d = new DateFormat('dd/mm/yyyy').parse(de);
+      //                                  print("s2date $s2date");
+      //                                  print("s2dateN $s2dateN");
+      //                                  if((s2date==conS || s2date.isAfter(conS)) && (s2date==conE || s2date.isBefore(conE))){
+      //                                    print('0');
+      //                                    // Navigator.push(
+      //                                    //     context,
+      //                                    //     MaterialPageRoute(
+      //                                    //         builder: (BuildContext context) =>
+      //                                    //             Running(idrunner: aaId,isType:isType)));
+      //                                    Navigator.push(
+      //                                        context,
+      //                                        MaterialPageRoute(
+      //                                            builder: (BuildContext context) =>
+      //                                                KilometerScreen(id: aaId,type:isType,km:distance ,)));
+      //                                  }else{
+      //                                    print('1');
+      //                                    showCustomDialog(context);
+      //                                  }
+      //                                },
+      //                              ),
+      //                            );
+      //                          });
+      //                    }
+      //               }),
+      //     ),
     );
   }
 }

@@ -4,12 +4,14 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 import 'package:app/util/file_util.dart';
 import 'package:app/system/SystemInstance.dart';
 import 'dart:convert';
 import 'package:app/config/config.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class RegisterRun extends StatefulWidget {
   final int aaid;
@@ -49,6 +51,7 @@ class _RegisterRun extends State<RegisterRun> {
   String size = '';
   var status = "0";
   var price;
+  File _f;
 
   @override
   void initState(){
@@ -74,6 +77,16 @@ class _RegisterRun extends State<RegisterRun> {
       }
     });
   }
+  defaultImage() async {
+    _f = await getImageFileFromAssets('NoImage.png');
+  }
+
+  Future<File> getImageFileFromAssets(String path) async {
+    final byteData = await rootBundle.load('images/$path');
+    final file = File('${(await getTemporaryDirectory()).path}/$path');
+    await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    return file;
+  }
 
   Future showCustomDialog(BuildContext context) => showDialog(
       context: context,
@@ -90,6 +103,26 @@ class _RegisterRun extends State<RegisterRun> {
 
 
   void onClick(){
+    if(price == '0'){
+      Map params = Map();
+      params['id'] = aID.toString();
+      params['userId'] = userId.toString();
+      params['size'] = size;
+      params['status'] = status.toString();
+      Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
+      http.post('${Config.API_URL}/test_run/save_run',headers: header,body: params).then((res){
+        Map resMap = jsonDecode(res.body) as Map;
+        print(resMap);
+        var data = resMap['status'];
+        if(data == 1){
+          Navigator.pop(context);
+          showCustomDialog(context);
+          setState(() {});
+        }else{
+          CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
+        }
+      });
+    }else{
     Dio dio = Dio();
     Map<String, dynamic> params = Map();
     params['id'] = aID.toString();
@@ -111,7 +144,7 @@ class _RegisterRun extends State<RegisterRun> {
         CoolAlert.show(context: context, type: CoolAlertType.error, text: 'ทำรายการไม่สำเร็จ');
       }
 
-    });
+    });}
   }
 
   @override
@@ -226,11 +259,11 @@ class _RegisterRun extends State<RegisterRun> {
                     },
                   ),
                 ),
-                Container(
+                price == '0'? Padding(padding: EdgeInsets.zero,): Container(
                   padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: Text('ส่งใบเสร็จยืนยันการชำระเงิน',style: TextStyle(color: Colors.black),),
                 ),
-                Container(
+                price == '0'? Padding(padding: EdgeInsets.zero,): Container(
                   padding: const EdgeInsets.only(top: 10),
                   child: Center(
                     child: _image == null ? Container(
@@ -243,7 +276,7 @@ class _RegisterRun extends State<RegisterRun> {
                     ):Image.file(_image),
                   ),
                 ),
-                Padding(
+                price == '0'? Padding(padding: EdgeInsets.zero,): Padding(
                   padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
                   child: Container(
 
@@ -254,6 +287,7 @@ class _RegisterRun extends State<RegisterRun> {
                     ),
                   ),
                 ),
+                Padding(padding: EdgeInsets.all(20),),
                 Container(
                     height: 50,
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),

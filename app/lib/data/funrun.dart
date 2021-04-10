@@ -39,6 +39,7 @@ class _FunRun extends State {
   var datee;
   var img;
   var price;
+  bool _isLoading = true;
 
   Future _getData()async{
     Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
@@ -189,42 +190,58 @@ class _FunRun extends State {
       print("admin");
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
       var data = await http.post('${Config.API_URL}/test_all/show_list?type=Fun Run&userId=$userId',headers: header );
-      var _data = jsonDecode(data.body);
-      print(_data);
-      for(var i in _data){
-        Run run = Run(
-          i["id"],
-          i["nameAll"],
-          i["distance"],
-          i["type"],
-          i["dateStart"],
-          i["dateEnd"],
-          i["imgAll"],
-          i["userId"],
-          i["createDate"],
-          i["price"],
-        );
-        runs.add(run);
+      if(data.statusCode == 200) {
+        _isLoading = false;
+        var _data = jsonDecode(data.body);
+        print(_data);
+        for (var i in _data) {
+          Run run = Run(
+            i["id"],
+            i["nameAll"],
+            i["distance"],
+            i["type"],
+            i["dateStart"],
+            i["dateEnd"],
+            i["imgAll"],
+            i["userId"],
+            i["createDate"],
+            i["price"],
+          );
+          runs.add(run);
+        }
+      }else{
+        _isLoading = false;
+        setState(() {
+
+        });
       }
     }else if(stat == 'User'){
       Map<String, String> header = {"Authorization": "Bearer ${_systemInstance.token}"};
       var data = await http.post('${Config.API_URL}/test_all/show?type=Fun Run',headers: header );
-      var _data = jsonDecode(data.body);
-      print(_data);
-      for(var i in _data){
-        Run run = Run(
-          i["id"],
-          i["nameAll"],
-          i["distance"],
-          i["type"],
-          i["dateStart"],
-          i["dateEnd"],
-          i["imgAll"],
-          i["userId"],
-          i["createDate"],
-          i["price"],
-        );
-        runs.add(run);
+      if(data.statusCode == 200) {
+        _isLoading = false;
+        var _data = jsonDecode(data.body);
+        print(_data);
+        for (var i in _data) {
+          Run run = Run(
+            i["id"],
+            i["nameAll"],
+            i["distance"],
+            i["type"],
+            i["dateStart"],
+            i["dateEnd"],
+            i["imgAll"],
+            i["userId"],
+            i["createDate"],
+            i["price"],
+          );
+          runs.add(run);
+        }
+      }else{
+        _isLoading = false;
+        setState(() {
+
+        });
       }
     }else{
 
@@ -303,7 +320,7 @@ class _FunRun extends State {
         // ],
       ),
       body: Container(
-        child: runs.isEmpty ? Center(
+        child: _isLoading ? Center(
           child: Padding(
             padding: EdgeInsets.all(0),
               child: Loading(

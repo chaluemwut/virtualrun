@@ -185,7 +185,7 @@ class _InfoUserScreenState extends State<InfoUserScreen> {
               ),
             ),
 
-            Container(
+            img == null ? Padding(padding: EdgeInsets.zero,): Container(
               padding: const EdgeInsets.only(top: 30),
               child: Center(
                 child:Container(
