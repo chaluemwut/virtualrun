@@ -554,79 +554,148 @@ class _Tournament extends State<Tournament> {
                                 itemCount: alls.length,
                                   itemBuilder: (BuildContext context, int index){
                                     print(alls.length);
-                                    print("IDIDID$userId");
-                                    print("ddd${runners[index].userId}");
-                                    return Container(
-                                      margin:EdgeInsets.all(8.0),
-                                      child: Stack(
-                                        alignment: Alignment.topLeft,
-                                        children: [
-                                          Card(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                                            child: InkWell(
-                                              onTap: () {
-                                                aaid = alls[index].id;
-                                                nameAll = alls[index].nameAll;
-                                                dis = alls[index].distance;
-                                                type = alls[index].type;
-                                                dates = alls[index].dateStart;
-                                                datee = alls[index].dateEnd;
-                                                img = alls[index].imgAll;
-                                                price = alls[index].price;
-                                                print(aaid);
-                                                print(nameAll);
-                                                print(dis);
-                                                print(type);
-                                                print(dates);
-                                                print(datee);
-                                                if(stat == "Admin"){
-                                                  showCustomDialogEdit(context);
-                                                }else{
-                                                  checker();
-                                                  // Navigator.of(context).pop();
-                                                }
-                                                // Navigator.push(context,
-                                                //     MaterialPageRoute(
-                                                //         builder: (BuildContext context) =>
-                                                //             RegisterRun(aaid: aaid,)));
-                                              },
-                                              child: Column(
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius: BorderRadius.only(
-                                                      topLeft: Radius.circular(8.0),
-                                                      topRight: Radius.circular(8.0),
-                                                    ),
-                                                    child: FadeInImage(
-                                                      placeholder: AssetImage('assets/images/loading.gif'),
-                                                      image: NetworkImage(
-                                                        '${Config.API_URL}/test_all/image?imgAll=${alls[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                                    if(runners.length == 0){
+                                      print('noo');
+                                      return Container(
+                                        margin:EdgeInsets.all(8.0),
+                                        child: Stack(
+                                          alignment: Alignment.topLeft,
+                                          children: [
+                                            Card(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  aaid = alls[index].id;
+                                                  nameAll = alls[index].nameAll;
+                                                  dis = alls[index].distance;
+                                                  type = alls[index].type;
+                                                  dates = alls[index].dateStart;
+                                                  datee = alls[index].dateEnd;
+                                                  img = alls[index].imgAll;
+                                                  price = alls[index].price;
+                                                  print(aaid);
+                                                  print(nameAll);
+                                                  print(dis);
+                                                  print(type);
+                                                  print(dates);
+                                                  print(datee);
+                                                  if(stat == "Admin"){
+                                                    showCustomDialogEdit(context);
+                                                  }else{
+                                                    checker();
+                                                    // Navigator.of(context).pop();
+                                                  }
+                                                  // Navigator.push(context,
+                                                  //     MaterialPageRoute(
+                                                  //         builder: (BuildContext context) =>
+                                                  //             RegisterRun(aaid: aaid,)));
+                                                },
+                                                child: Column(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadius.only(
+                                                        topLeft: Radius.circular(8.0),
+                                                        topRight: Radius.circular(8.0),
                                                       ),
-                                                      width: 350,
-                                                      height: 150,
-                                                      fit: BoxFit.cover,
+                                                      child: FadeInImage(
+                                                        placeholder: AssetImage('assets/images/loading.gif'),
+                                                        image: NetworkImage(
+                                                          '${Config.API_URL}/test_all/image?imgAll=${alls[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                                                        ),
+                                                        width: 350,
+                                                        height: 150,
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  ListTile(
-                                                    title: Text("รายการ "+alls[index].nameAll +" ระยะทาง "+ alls[index].distance),
-                                                    subtitle: Text(' จากวันที่ ' + alls[index].dateStart + ' ถึงวันที่ '
-                                                        + alls[index].dateEnd),
+                                                    ListTile(
+                                                      title: Text("รายการ "+alls[index].nameAll +" ระยะทาง "+ alls[index].distance),
+                                                      subtitle: Text(' จากวันที่ ' + alls[index].dateStart + ' ถึงวันที่ '
+                                                          + alls[index].dateEnd),
 
-                                                  ),
-                                                ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
 
-                                          ),
-                                         userId == runners[index].userId  ? Container(
-                                            width: 70,
-                                            height: 30,
-                                            color: Colors.blue,
-                                            child: Text("สมัครแล้ว",style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
-                                          ):Padding(padding: EdgeInsets.zero,)
-                                        ],
-                                      ),
-                                    );
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }else{
+                                      print("IDIDID$userId");
+                                      print("ddd${runners[index].userId}");
+                                      return Container(
+                                        margin:EdgeInsets.all(8.0),
+                                        child: Stack(
+                                          alignment: Alignment.topLeft,
+                                          children: [
+                                            Card(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  aaid = alls[index].id;
+                                                  nameAll = alls[index].nameAll;
+                                                  dis = alls[index].distance;
+                                                  type = alls[index].type;
+                                                  dates = alls[index].dateStart;
+                                                  datee = alls[index].dateEnd;
+                                                  img = alls[index].imgAll;
+                                                  price = alls[index].price;
+                                                  print(aaid);
+                                                  print(nameAll);
+                                                  print(dis);
+                                                  print(type);
+                                                  print(dates);
+                                                  print(datee);
+                                                  if(stat == "Admin"){
+                                                    showCustomDialogEdit(context);
+                                                  }else{
+                                                    checker();
+                                                    // Navigator.of(context).pop();
+                                                  }
+                                                  // Navigator.push(context,
+                                                  //     MaterialPageRoute(
+                                                  //         builder: (BuildContext context) =>
+                                                  //             RegisterRun(aaid: aaid,)));
+                                                },
+                                                child: Column(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadius.only(
+                                                        topLeft: Radius.circular(8.0),
+                                                        topRight: Radius.circular(8.0),
+                                                      ),
+                                                      child: FadeInImage(
+                                                        placeholder: AssetImage('assets/images/loading.gif'),
+                                                        image: NetworkImage(
+                                                          '${Config.API_URL}/test_all/image?imgAll=${alls[index].imgAll}',headers: {"Authorization": "Bearer ${_systemInstance.token}"},
+                                                        ),
+                                                        width: 350,
+                                                        height: 150,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    ListTile(
+                                                      title: Text("รายการ "+alls[index].nameAll +" ระยะทาง "+ alls[index].distance),
+                                                      subtitle: Text(' จากวันที่ ' + alls[index].dateStart + ' ถึงวันที่ '
+                                                          + alls[index].dateEnd),
+
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                            ),
+                                            userId == runners[index].userId  ? Container(
+                                              width: 70,
+                                              height: 30,
+                                              color: Colors.blue,
+                                              child: Text("สมัครแล้ว",style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+                                            ):Padding(padding: EdgeInsets.zero,)
+                                          ],
+                                        ),
+                                      );
+                                    }
                                   }
                               ),
                           ),
